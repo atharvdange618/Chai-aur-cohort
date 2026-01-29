@@ -1,0 +1,47 @@
+<svg width="1200" height="630" xmlns="http://www.w3.org/2000/svg">
+    <!-- Background -->
+    <rect width="1200" height="630" fill="#0a0a0a" />
+
+    <!-- Grid pattern -->
+    <defs>
+        <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+            <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#1a1a1a" stroke-width="1" />
+        </pattern>
+    </defs>
+    <rect width="1200" height="630" fill="url(#grid)" opacity="0.3" />
+
+    <!-- Terminal window -->
+    <rect x="100" y="150" width="1000" height="380" rx="8" fill="#0d0d0d" stroke="#00ff00"
+        stroke-width="2" />
+
+    <!-- Terminal header -->
+    <rect x="100" y="150" width="1000" height="40" rx="8" fill="#1a1a1a" />
+    <circle cx="125" cy="170" r="6" fill="#ff5f56" />
+    <circle cx="145" cy="170" r="6" fill="#ffbd2e" />
+    <circle cx="165" cy="170" r="6" fill="#27c93f" />
+
+    <!-- Terminal content -->
+    <text x="130" y="240" font-family="monospace" font-size="32" fill="#00ff00" font-weight="bold">
+        atharv@portfolio:~$ whoami
+    </text>
+
+    <text x="130" y="300" font-family="monospace" font-size="28" fill="#ffffff">
+        Atharv Dange
+    </text>
+    <text x="130" y="340" font-family="monospace" font-size="24" fill="#00d9ff">
+        Full Stack Engineer
+    </text>
+    <text x="130" y="380" font-family="monospace" font-size="20" fill="#888888">
+        TypeScript • React • Next.js • Node.js
+    </text>
+
+    <text x="130" y="450" font-family="monospace" font-size="24" fill="#00ff00">
+        atharv@portfolio:~$
+    </text>
+    <rect x="460" y="430" width="15" height="25" fill="#00ff00" opacity="0.7" />
+
+    <!-- Bottom accent -->
+    <text x="130" y="580" font-family="monospace" font-size="18" fill="#666666">
+        github.com/atharvdange618
+    </text>
+</svg>
