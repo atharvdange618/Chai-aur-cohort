@@ -24,12 +24,6 @@
 
 **Chai Aur Cohort** is a full-stack web development course in MERN Stack by **[Hitesh Choudhary](https://x.com/@Hiteshdotcom)** & **[Piyush Garg](https://x.com/@piyushgarg_dev)**. From basics to full-stack dev, this repository documents my in-depth learning journey within the program.
 
-</br>
-
-Public repo for webdev cohort 26 assignments
-
-- [HTML Resume](/html_resume/index.html): Resume made with semantic HTML. [Visit here](https://atharvdangedev.netlify.app/)
-
 ## Documentation
 
 - #### [Assignments : learn](./assignments/README.md)
