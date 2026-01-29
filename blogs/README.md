@@ -150,3 +150,13 @@
   </a>
 
 <br>
+
+### [CSS Selectors 101: Targeting Elements with Precision](https://built-from-scratch.vercel.app/posts/css-selectors-101-targeting-elements-with-precision)
+
+  <a href="https://built-from-scratch.vercel.app/posts/css-selectors-101-targeting-elements-with-precision">
+      <p align=center>
+      <img width = "500px" alt="CSS Selectors 101: Targeting Elements with Precision" src="./assets/css-selectors.png">
+    <p>
+  </a>
+
+<br>
