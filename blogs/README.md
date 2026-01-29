@@ -130,3 +130,13 @@
   </a>
 
 <br>
+
+### [Understanding HTML Tags and Elements](http://localhost:3000/posts/understanding-html-tags-and-elements)
+
+  <a href="http://localhost:3000/posts/understanding-html-tags-and-elements">
+      <p align=center>
+      <img width = "500px" alt="Git Fundamentals: A Deep Dive into Version Control" src="./assets/html-tags-and-elements.png">
+    <p>
+  </a>
+
+<br>
