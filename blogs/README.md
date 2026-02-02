@@ -160,3 +160,13 @@
   </a>
 
 <br>
+
+### [JavaScript Engines: A Quick Tour Through V8, SpiderMonkey, and Beyond](https://blog.atharvdangedev.in/posts/javascript-engines-a-quick-tour-through-v8-spidermonkey-and-beyond)
+
+  <a href="https://blog.atharvdangedev.in/posts/javascript-engines-a-quick-tour-through-v8-spidermonkey-and-beyond">
+      <p align=center>
+      <img width = "500px" alt="JavaScript Engines: A Quick Tour Through V8, SpiderMonkey, and Beyond" src="./assets/css-selectors.png">
+    <p>
+  </a>
+
+<br>
