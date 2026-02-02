@@ -1,0 +1,166 @@
+:root {
+  --bg-dark: #14120b;
+  --text-main: #edecec;
+  --text-muted: #a1a1a1a4;
+}
+
+body {
+  margin: 0;
+  padding: 0px 11vw;
+  font-family:
+    CursorGothic, "CursorGothic Fallback", system-ui, "Helvetica Neue",
+    Helvetica, Arial, sans-serif;
+  background-color: var(--bg-dark);
+  color: var(--text-main);
+}
+
+.container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 28px;
+}
+
+.logo-wrapper,
+.nav-actions {
+  flex: 1;
+  display: flex;
+  align-items: center;
+}
+
+.nav-actions {
+  justify-content: flex-end;
+  gap: 4px;
+}
+
+.nav-list {
+  display: flex;
+  list-style: none;
+  gap: 32px;
+  margin: 0;
+  padding: 0;
+}
+
+.nav-list a {
+  text-decoration: none;
+  color: var(--text-main);
+  font-size: 14px;
+  font-weight: 500;
+  transition: color 0.2s ease;
+}
+
+.nav-list a:hover {
+  color: var(--text-muted);
+}
+
+.btn-signin {
+  text-decoration: none;
+  color: var(--text-main);
+  font-size: 14px;
+  padding: 6px 16px;
+  border: 0.2px solid var(--text-muted);
+  border-radius: 100px;
+  transition: background 0.2s;
+}
+
+.btn-signin:hover {
+  background: #1a1a1a;
+}
+
+.btn-download {
+  text-decoration: none;
+  background-color: var(--text-main);
+  color: #000000;
+  font-size: 14px;
+  font-weight: 500;
+  padding: 6px 12px;
+  border-radius: 100px;
+  transition: opacity 0.2s;
+}
+
+.btn-download:hover {
+  opacity: 0.9;
+}
+
+.logo {
+  height: 32px;
+  width: auto;
+}
+
+.nav-item-dropdown {
+  position: relative;
+  padding-bottom: 10px;
+  margin-bottom: -10px;
+}
+
+.nav-link-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  cursor: pointer;
+}
+
+.nav-caret {
+  color: var(--text-muted);
+  display: flex;
+  align-items: center;
+  transition: transform 0.2s ease;
+}
+
+.nav__sub-nav {
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%) translateY(10px);
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.2s ease;
+  z-index: 100;
+}
+
+.nav-item-dropdown:hover .nav__sub-nav {
+  opacity: 1;
+  visibility: visible;
+  transform: translateX(-50%) translateY(0);
+}
+
+.nav-item-dropdown:hover .nav-caret {
+  transform: rotate(180deg);
+}
+
+.sub-nav-card {
+  background-color: #1a1a16;
+  border: 1px solid #262620;
+  border-radius: 8px;
+  padding: 16px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+  min-width: 280px;
+}
+
+.sub-nav-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px 24px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.sub-nav-grid a {
+  display: block;
+  text-decoration: none;
+  color: #a1a1a1;
+  font-size: 13px;
+  padding: 8px 0;
+  transition: color 0.2s;
+}
+
+.sub-nav-grid a:hover {
+  color: #ffffff;
+}
+
+.sub-nav-grid span {
+  font-size: 10px;
+  vertical-align: top;
+  margin-left: 2px;
+}
