@@ -21,4 +21,5 @@
   Showcase of all the assignments I've done during the program.
 </p>
 
-- #### HTML Resume: Resume made with semantic HTML. [Visit here](https://atharvdangedev.netlify.app)
+- #### HTML Resume made with semantic HTML. [Visit here](https://resume.atharvdangedev.in)
+- #### Cursor Landing Page made with HTML and CSS. [Visit here](https://cursor.atharvdangedev.in)
