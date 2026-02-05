@@ -671,3 +671,126 @@ body {
   opacity: 0.9;
 }
 
+.cta-section {
+  padding: 120px 20px;
+  text-align: center;
+}
+
+.cta-container {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.cta-title {
+  font-size: 3.5rem;
+  font-weight: 700;
+  color: #ffffff;
+  line-height: 1.1;
+  margin-bottom: 1.5rem;
+  letter-spacing: -0.02em;
+}
+
+.cta-subtitle {
+  color: #94a3b8;
+  font-size: 1.125rem;
+  margin-bottom: 2.5rem;
+}
+
+.cta-actions {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  margin-bottom: 5rem;
+}
+
+.btn-cta-primary {
+  background: #ffffff;
+  color: #020617;
+  text-decoration: none;
+  font-weight: 600;
+  padding: 12px 28px;
+  border-radius: 99px;
+  transition: background 0.2s;
+}
+
+.btn-cta-primary:hover {
+  background: #f1f5f9;
+}
+
+.btn-cta-secondary {
+  background: transparent;
+  color: #ffffff;
+  text-decoration: none;
+  font-weight: 600;
+  padding: 12px 28px;
+  border-radius: 99px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  transition: border-color 0.2s;
+}
+
+.btn-cta-secondary:hover {
+  border-color: #ffffff;
+}
+
+.cta-resources {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+}
+
+.resource-block {
+  padding: 0 40px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.bordered {
+  border-right: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.resource-icon {
+  width: 48px;
+  height: 48px;
+  padding: 5px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 1.5rem;
+  color: #10b981;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.resource-title {
+  color: #ffffff;
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+.resource-desc {
+  color: #94a3b8;
+  font-size: 0.95rem;
+  margin-bottom: 1.5rem;
+}
+
+.resource-link {
+  color: #10b981;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 0.9rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.resource-link:hover .arrow {
+  transform: translateX(3px);
+}
+
+.arrow {
+  transition: transform 0.2s;
+  font-size: 1.2em;
+  line-height: 1;
+}
