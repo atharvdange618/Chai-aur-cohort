@@ -23,3 +23,4 @@
 
 - #### HTML Resume made with semantic HTML. [Visit here](https://resume.atharvdangedev.in)
 - #### Cursor Landing Page made with HTML and CSS. [Visit here](https://cursor.atharvdangedev.in)
+- #### Mintlify Landing page made with HTML and CSS. [Visit here](https://mintlify.atharvdangedev.in)
