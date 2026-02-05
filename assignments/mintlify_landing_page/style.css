@@ -12,15 +12,13 @@
 
 body {
   background-color: var(--bg-main);
-  height: 200vh;
 }
 
 .navbar {
   position: sticky;
+  position: -webkit-sticky;
   top: 0;
   z-index: 1000;
-  background-color: rgba(158, 158, 158, 0);
-  backdrop-filter: blur(8px);
 }
 
 .nav-container {
@@ -30,6 +28,7 @@ body {
   align-items: center;
   justify-content: space-between;
   padding: 1rem 2rem;
+  backdrop-filter: blur(8px);
 }
 
 .logo {
@@ -798,7 +797,7 @@ body {
 .site-footer {
   background: linear-gradient(to bottom, #08090a 0%, #151616 100%);
   color: #fff;
-  border-top: 1px solid rgba(255, 255, 255, 0.10);
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
   padding: 0 20px;
   font-size: 0.9rem;
 }
@@ -807,9 +806,9 @@ body {
   max-width: 974px;
   margin: 0 auto;
 
-  border-left: 1px solid rgba(255, 255, 255, 0.10);
-  border-right: 1px solid rgba(255, 255, 255, 0.10);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.10);
+  border-left: 1px solid rgba(255, 255, 255, 0.1);
+  border-right: 1px solid rgba(255, 255, 255, 0.1);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 
   padding: 80px 40px 40px;
 
@@ -818,7 +817,7 @@ body {
 
 .footer-security,
 .footer-bottom {
-  border-top: 1px solid rgba(255, 255, 255, 0.10);
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .footer-header {
@@ -894,7 +893,7 @@ body {
 }
 
 .footer-security {
-  border-top: 1px solid rgba(255, 255, 255, 0.10);
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
   padding: 40px 0;
   display: flex;
   align-items: center;
@@ -925,7 +924,7 @@ body {
 }
 
 .footer-bottom {
-  border-top: 1px solid rgba(255, 255, 255, 0.10);
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
   padding-top: 40px;
   display: flex;
   justify-content: space-between;
@@ -938,7 +937,7 @@ body {
   display: flex;
   align-items: center;
   gap: 8px;
-  background: rgba(255, 255, 255, 0.10);
+  background: rgba(255, 255, 255, 0.1);
   padding: 6px 12px;
   border-radius: 99px;
   font-weight: 500;
@@ -979,7 +978,7 @@ body {
 
 .theme-btn:hover {
   color: #cbd5e1;
-  background: rgba(255, 255, 255, 0.10);
+  background: rgba(255, 255, 255, 0.1);
 }
 
 .theme-btn.active {
