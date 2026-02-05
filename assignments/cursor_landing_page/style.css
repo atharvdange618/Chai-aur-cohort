@@ -7,11 +7,19 @@
   --text-red: #f54e00;
 }
 
+@font-face {
+  font-family: CursorGothic-Regular;
+  src: url("fonts/CursorGothic_Regular-s.p.a361088d.woff2") format("woff2");
+  font-display: swap;
+  font-weight: 400;
+  font-style: normal;
+}
+
 body {
   margin: 0;
   font-family:
-    CursorGothic, "CursorGothic Fallback", system-ui, "Helvetica Neue",
-    Helvetica, Arial, sans-serif;
+    CursorGothic-Regular, system-ui, "Helvetica Neue", Helvetica, Arial,
+    sans-serif;
   background-color: var(--bg-dark);
   color: var(--text-main);
 }
