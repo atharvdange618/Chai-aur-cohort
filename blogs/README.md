@@ -165,7 +165,28 @@
 
   <a href="https://blog.atharvdangedev.in/posts/javascript-engines-a-quick-tour-through-v8-spidermonkey-and-beyond">
       <p align=center>
-      <img width = "500px" alt="JavaScript Engines: A Quick Tour Through V8, SpiderMonkey, and Beyond" src="./assets/css-selectors.png">
+      <img width = "500px" alt="JavaScript Engines: A Quick Tour Through V8, SpiderMonkey, and Beyond" src="./assets/javascript-engines.png">
+    <p>
+  </a>
+
+<br>
+
+### [How JavaScript Engines Actually Work: A Deep Dive Under the Hood](https://blog.atharvdangedev.in/posts/how-javascript-engines-actually-work-a-deep-dive-under-the-hood)
+
+  <a href="https://blog.atharvdangedev.in/posts/how-javascript-engines-actually-work-a-deep-dive-under-the-hood">
+      <p align=center>
+      <img width = "500px" alt="How JavaScript Engines Actually Work: A Deep Dive Under the Hood" src="./assets/javascript-engines-working.png">
+    <p>
+  </a>
+
+<br>
+
+### [JavaScript Hoisting: What It Actually Is (And What Everyone Gets Wrong)](https://blog.atharvdangedev.in/posts/javascript-hoisting-what-it-actually-is-and-what-everyone-gets-wrong)
+
+  <a href="https://blog.atharvdangedev.in/posts/javascript-hoisting-what-it-actually-is-and-what-everyone-gets-wrong">
+      <p align=center>
+      <img width = "500px" alt="JavaScript Hoisting: What It Actually Is (And What Everyone Gets Wrong)" src="./assets/javascript-hoisting.png
+      ">
     <p>
   </a>
 
