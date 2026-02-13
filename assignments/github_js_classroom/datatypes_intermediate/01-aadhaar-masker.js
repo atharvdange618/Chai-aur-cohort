@@ -28,7 +28,7 @@
  *   // => "INVALID"
  */
 export function maskAadhaar(aadhaarNumber) {
-  // constraintsc
+  // constraints
   if (
     typeof aadhaarNumber !== "string" ||
     aadhaarNumber.length !== 12 ||
