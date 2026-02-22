@@ -69,6 +69,11 @@ console.log(potionShop);
 console.log(potionShop.brew());
 console.log(potionShop.inventory);
 
+function something() {
+  let i = 7
+  const name = "hitesh"
+  return 5
+}
 
 function makeFunc() {
   const name = "Mozilla";
