@@ -191,3 +191,33 @@
   </a>
 
 <br>
+
+### [JavaScript Polyfills, Prototypes, and Method Binding: Recreating Array Methods](https://blog.atharvdangedev.in/posts/javascript-polyfills-prototypes-and-method-binding-recreating-array-methods)
+
+  <a href="https://blog.atharvdangedev.in/posts/javascript-polyfills-prototypes-and-method-binding-recreating-array-methods">
+      <p align=center>
+      <img width = "500px" alt="JavaScript Polyfills, Prototypes, and Method Binding: Recreating Array Methods" src="./assets/js-polyfills.png">
+    <p>
+  </a>
+
+<br>
+
+### [Understanding Variables and Data Types in JavaScript](https://blog.atharvdangedev.in/posts/understanding-variables-and-data-types-in-javascript)
+
+  <a href="https://blog.atharvdangedev.in/posts/understanding-variables-and-data-types-in-javascript">
+      <p align=center>
+      <img width = "500px" alt="Understanding Variables and Data Types in JavaScript" src="./assets/js-vars.png">
+    <p>
+  </a>
+
+<br>
+
+### [JavaScript Operators: The Basics You Need to Know](https://blog.atharvdangedev.in/posts/javascript-operators-the-basics-you-need-to-know)
+
+  <a href="https://blog.atharvdangedev.in/posts/javascript-operators-the-basics-you-need-to-know">
+      <p align=center>
+      <img width = "500px" alt="JavaScript Operators: The Basics You Need to Know" src="./assets/js-operators.png">
+    <p>
+  </a>
+
+<br>
