@@ -221,3 +221,13 @@
   </a>
 
 <br>
+
+### [Understanding JavaScript Promises: Navigating Async Code Across the Multiverse](https://blog.atharvdangedev.in/posts/understanding-javascript-promises-navigating-async-code-across-the-multiverse)
+
+  <a href="https://blog.atharvdangedev.in/posts/understanding-javascript-promises-navigating-async-code-across-the-multiverse">
+      <p align=center>
+      <img width = "500px" alt="Understanding JavaScript Promises: Navigating Async Code Across the Multiverse" src="./assets/js-promises.png">
+    <p>
+  </a>
+
+<br>
