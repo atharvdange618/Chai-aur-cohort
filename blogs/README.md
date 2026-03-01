@@ -231,3 +231,13 @@
   </a>
 
 <br>
+
+### [Function Declaration vs Function Expression: What's the Difference?](https://blog.atharvdangedev.in/posts/function-declaration-vs-function-expression-whats-the-difference)
+
+  <a href="https://blog.atharvdangedev.in/posts/function-declaration-vs-function-expression-whats-the-difference">
+      <p align=center>
+      <img width = "500px" alt="Function Declaration vs Function Expression: What's the Difference?" src="./assets/js-functions.png">
+    <p>
+  </a>
+
+<br>
