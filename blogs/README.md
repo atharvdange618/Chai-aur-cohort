@@ -241,3 +241,23 @@
   </a>
 
 <br>
+
+### [Arrow Functions in JavaScript: A Simpler Way to Write Functions](https://blog.atharvdangedev.in/posts/arrow-functions-in-javascript-a-simpler-way-to-write-functions)
+
+  <a href="https://blog.atharvdangedev.in/posts/arrow-functions-in-javascript-a-simpler-way-to-write-functions">
+      <p align=center>
+      <img width = "500px" alt="Arrow Functions in JavaScript: A Simpler Way to Write Functions" src="./assets/arrow-functions.png">
+    <p>
+  </a>
+
+<br>
+
+### [JavaScript Arrays 101: Store, Access, and Loop Over Data Like a Pro](https://blog.atharvdangedev.in/posts/javascript-arrays-101-store-access-and-loop-over-data-like-a-pro)
+
+  <a href="https://blog.atharvdangedev.in/posts/javascript-arrays-101-store-access-and-loop-over-data-like-a-pro">
+      <p align=center>
+      <img width = "500px" alt="JavaScript Arrays 101: Store, Access, and Loop Over Data Like a Pro" src="./assets/js-arrays.png">
+    <p>
+  </a>
+
+<br>
