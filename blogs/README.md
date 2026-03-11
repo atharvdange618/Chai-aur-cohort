@@ -261,3 +261,43 @@
   </a>
 
 <br>
+
+### [JavaScript Array Methods You Must Know](https://blog.atharvdangedev.in/posts/javascript-array-methods-you-must-know)
+
+  <a href="https://blog.atharvdangedev.in/posts/javascript-array-methods-you-must-know">
+      <p align=center>
+      <img width = "500px" alt="JavaScript Array Methods You Must Know" src="./assets/array-methods.png">
+    <p>
+  </a>
+
+<br>
+
+### [Understanding Objects in JavaScript](https://blog.atharvdangedev.in/posts/understanding-objects-in-javascript)
+
+  <a href="https://blog.atharvdangedev.in/posts/understanding-objects-in-javascript">
+      <p align=center>
+      <img width = "500px" alt="Understanding Objects in JavaScript" src="./assets/objects.png">
+    <p>
+  </a>
+
+<br>
+
+### [The Magic of `this`, `call()`, `apply()`, and `bind()` in JavaScript](https://blog.atharvdangedev.in/posts/the-magic-of-this-call-apply-and-bind-in-javascript)
+
+  <a href="https://blog.atharvdangedev.in/posts/the-magic-of-this-call-apply-and-bind-in-javascript">
+      <p align=center>
+      <img width = "500px" alt="The Magic of `this`, `call()`, `apply()`, and `bind()` in JavaScript" src="./assets/magic.png">
+    <p>
+  </a>
+
+<br>
+
+### [Understanding Object-Oriented Programming in JavaScript](https://blog.atharvdangedev.in/posts/understanding-object-oriented-programming-in-javascript)
+
+  <a href="https://blog.atharvdangedev.in/posts/understanding-object-oriented-programming-in-javascript">
+      <p align=center>
+      <img width = "500px" alt="Understanding Object-Oriented Programming in JavaScript" src="./assets/oop.png">
+    <p>
+  </a>
+
+<br>
