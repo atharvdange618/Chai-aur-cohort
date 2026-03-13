@@ -301,3 +301,13 @@
   </a>
 
 <br>
+
+### [Understanding Node.js Architecture: A Deep Dive into V8, libuv, and Everything in Between](https://blog.atharvdangedev.in/posts/understanding-nodejs-architecture-a-deep-dive-into-v8-libuv-and-everything-in-between)
+
+  <a href="https://blog.atharvdangedev.in/posts/understanding-nodejs-architecture-a-deep-dive-into-v8-libuv-and-everything-in-between">
+      <p align=center>
+      <img width = "500px" alt="Understanding Node.js Architecture: A Deep Dive into V8, libuv, and Everything in Between" src="./assets/nodejs.png">
+    <p>
+  </a>
+
+<br>
