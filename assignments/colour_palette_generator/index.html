@@ -1,0 +1,524 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" href="/logo.svg" type="image/svg+xml" />
+    <title>Color Palette Generator - Color Theory Tool by Atharv Dange</title>
+    <meta
+      name="title"
+      content="Color Palette Generator - Color Theory Tool by Atharv Dange"
+    />
+    <meta
+      name="description"
+      content="Generate harmonious color palettes using color theory. Create complementary, analogous, triadic, and tetradic color schemes with interactive color wheel visualizations. Learn color theory while designing!"
+    />
+    <meta
+      name="keywords"
+      content="color palette generator, color theory, complementary colors, analogous colors, triadic colors, tetradic colors, HSL color picker, design tool, color wheel, color harmony"
+    />
+    <meta name="author" content="Atharv Dange" />
+    <meta name="language" content="English" />
+    <meta name="robots" content="index, follow" />
+
+    <meta property="og:type" content="website" />
+    <meta
+      property="og:url"
+      content="https://color-palette-generator.atharvdangedev.in"
+    />
+    <meta
+      property="og:title"
+      content="Color Palette Generator - Color Theory Tool"
+    />
+    <meta
+      property="og:description"
+      content="Generate harmonious color palettes using color theory. Create complementary, analogous, triadic, and tetradic color schemes with interactive visualizations."
+    />
+    <meta
+      property="og:image"
+      content="https://color-palette-generator.atharvdangedev.in/og-image.png"
+    />
+    <meta property="og:site_name" content="Atharv Dange" />
+
+    <meta property="twitter:card" content="summary_large_image" />
+    <meta
+      property="twitter:url"
+      content="https://color-palette-generator.atharvdangedev.in"
+    />
+    <meta
+      property="twitter:title"
+      content="Color Palette Generator - Color Theory Tool"
+    />
+    <meta
+      property="twitter:description"
+      content="Generate harmonious color palettes using color theory. Create complementary, analogous, triadic, and tetradic color schemes."
+    />
+    <meta
+      property="twitter:image"
+      content="https://color-palette-generator.atharvdangedev.in/og-image.png"
+    />
+    <meta property="twitter:creator" content="@atharvdangedev" />
+
+    <link
+      rel="canonical"
+      href="https://color-palette-generator.atharvdangedev.in"
+    />
+
+    <meta name="theme-color" content="#60b5ff" />
+    <meta name="msapplication-TileColor" content="#60b5ff" />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&display=swap"
+      rel="stylesheet"
+    />
+
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+      integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    />
+
+    <link rel="stylesheet" href="style.css" />
+
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "WebApplication",
+        "name": "Color Palette Generator",
+        "description": "Generate harmonious color palettes using color theory principles including complementary, analogous, triadic, and tetradic color schemes",
+        "url": "https://color-palette-generator.atharvdangedev.in",
+        "author": {
+          "@type": "Person",
+          "name": "Atharv Dange",
+          "url": "https://atharvdange.com",
+          "sameAs": [
+            "https://x.com/atharvdangedev",
+            "https://github.com/atharvdange618"
+          ]
+        },
+        "applicationCategory": "DesignApplication",
+        "operatingSystem": "Any",
+        "offers": {
+          "@type": "Offer",
+          "price": "0",
+          "priceCurrency": "USD"
+        },
+        "featureList": [
+          "Complementary color schemes",
+          "Analogous color schemes",
+          "Triadic color schemes",
+          "Tetradic color schemes",
+          "HSL color conversion",
+          "Interactive color wheel visualizations",
+          "One-click color copying",
+          "Educational color theory explanations"
+        ]
+      }
+    </script>
+  </head>
+  <body>
+    <h1>Colour Palette Generator</h1>
+
+    <div class="container">
+      <div class="controls">
+        <div class="control-group">
+          <label for="base-color">Base Color:</label>
+          <input type="color" id="base-color" value="#60b5ff" />
+        </div>
+
+        <div class="control-group">
+          <label for="scheme-type">Scheme Type:</label>
+          <select id="scheme-type">
+            <option value="complementary">Complementary</option>
+            <option value="analogous">Analogous</option>
+            <option value="triadic">Triadic</option>
+            <option value="tetradic">Tetradic</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="palette"></div>
+
+      <section class="info-section">
+        <h2>How Color Theory Works</h2>
+        <p class="intro">
+          This generator uses
+          <strong>color wheel mathematics</strong> to create harmonious color
+          palettes based on proven design principles. Each scheme type rotates
+          the hue around a 360° color wheel to find colors that naturally work
+          well together.
+        </p>
+
+        <div class="scheme-explanations">
+          <div class="scheme-card">
+            <div class="scheme-header">
+              <h3>Complementary</h3>
+              <span class="scheme-badge">2 colors</span>
+            </div>
+            <div class="scheme-content">
+              <div class="scheme-visual">
+                <svg viewBox="0 0 200 200" class="color-wheel">
+                  <circle
+                    cx="100"
+                    cy="100"
+                    r="80"
+                    fill="none"
+                    stroke="#0a0a0a"
+                    stroke-width="3"
+                  />
+                  <defs>
+                    <linearGradient
+                      id="wheel-gradient"
+                      x1="0%"
+                      y1="0%"
+                      x2="100%"
+                      y2="0%"
+                    >
+                      <stop offset="0%" style="stop-color: #ff0000" />
+                      <stop offset="16.66%" style="stop-color: #ffff00" />
+                      <stop offset="33.33%" style="stop-color: #00ff00" />
+                      <stop offset="50%" style="stop-color: #00ffff" />
+                      <stop offset="66.66%" style="stop-color: #0000ff" />
+                      <stop offset="83.33%" style="stop-color: #ff00ff" />
+                      <stop offset="100%" style="stop-color: #ff0000" />
+                    </linearGradient>
+                  </defs>
+                  <circle
+                    cx="100"
+                    cy="100"
+                    r="75"
+                    fill="url(#wheel-gradient)"
+                    opacity="0.3"
+                  />
+
+                  <circle
+                    cx="180"
+                    cy="100"
+                    r="12"
+                    fill="#60b5ff"
+                    stroke="#0a0a0a"
+                    stroke-width="3"
+                  />
+                  <circle
+                    cx="20"
+                    cy="100"
+                    r="12"
+                    fill="#ff9149"
+                    stroke="#0a0a0a"
+                    stroke-width="3"
+                  />
+                  <line
+                    x1="180"
+                    y1="100"
+                    x2="20"
+                    y2="100"
+                    stroke="#0a0a0a"
+                    stroke-width="3"
+                    stroke-dasharray="5,5"
+                  />
+                </svg>
+              </div>
+              <div class="scheme-description">
+                <p>
+                  <strong>180° rotation</strong> - Colors directly opposite on
+                  the wheel create maximum contrast and vibrant combinations.
+                  Perfect for making elements stand out.
+                </p>
+                <p class="example">Example: Blue + Orange, Red + Green</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="scheme-card">
+            <div class="scheme-header">
+              <h3>Analogous</h3>
+              <span class="scheme-badge">5 colors</span>
+            </div>
+            <div class="scheme-content">
+              <div class="scheme-visual">
+                <svg viewBox="0 0 200 200" class="color-wheel">
+                  <circle
+                    cx="100"
+                    cy="100"
+                    r="80"
+                    fill="none"
+                    stroke="#0a0a0a"
+                    stroke-width="3"
+                  />
+                  <circle
+                    cx="100"
+                    cy="100"
+                    r="75"
+                    fill="url(#wheel-gradient)"
+                    opacity="0.3"
+                  />
+
+                  <circle
+                    cx="180"
+                    cy="100"
+                    r="12"
+                    fill="#60b5ff"
+                    stroke="#0a0a0a"
+                    stroke-width="3"
+                  />
+                  <circle
+                    cx="169"
+                    cy="140"
+                    r="10"
+                    fill="#4d9fff"
+                    stroke="#0a0a0a"
+                    stroke-width="2"
+                  />
+                  <circle
+                    cx="169"
+                    cy="60"
+                    r="10"
+                    fill="#73d1ff"
+                    stroke="#0a0a0a"
+                    stroke-width="2"
+                  />
+                  <circle
+                    cx="140"
+                    cy="169"
+                    r="8"
+                    fill="#3a89ff"
+                    stroke="#0a0a0a"
+                    stroke-width="2"
+                  />
+                  <circle
+                    cx="140"
+                    cy="31"
+                    r="8"
+                    fill="#86e7ff"
+                    stroke="#0a0a0a"
+                    stroke-width="2"
+                  />
+
+                  <path
+                    d="M 140 31 A 80 80 0 0 1 140 169"
+                    fill="none"
+                    stroke="#0a0a0a"
+                    stroke-width="2"
+                    stroke-dasharray="3,3"
+                  />
+                </svg>
+              </div>
+              <div class="scheme-description">
+                <p>
+                  <strong>±15° and ±30° spread</strong> - Colors sitting next to
+                  each other on the wheel create harmonious, serene, and
+                  cohesive palettes. Great for gradients.
+                </p>
+                <p class="example">
+                  Example: Blue, Blue-green, Cyan, Blue-violet
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <div class="scheme-card">
+            <div class="scheme-header">
+              <h3>Triadic</h3>
+              <span class="scheme-badge">5 colors</span>
+            </div>
+            <div class="scheme-content">
+              <div class="scheme-visual">
+                <svg viewBox="0 0 200 200" class="color-wheel">
+                  <circle
+                    cx="100"
+                    cy="100"
+                    r="80"
+                    fill="none"
+                    stroke="#0a0a0a"
+                    stroke-width="3"
+                  />
+                  <circle
+                    cx="100"
+                    cy="100"
+                    r="75"
+                    fill="url(#wheel-gradient)"
+                    opacity="0.3"
+                  />
+
+                  <circle
+                    cx="180"
+                    cy="100"
+                    r="12"
+                    fill="#60b5ff"
+                    stroke="#0a0a0a"
+                    stroke-width="3"
+                  />
+                  <circle
+                    cx="55"
+                    cy="169"
+                    r="12"
+                    fill="#ff6bd6"
+                    stroke="#0a0a0a"
+                    stroke-width="3"
+                  />
+                  <circle
+                    cx="55"
+                    cy="31"
+                    r="12"
+                    fill="#ffeb3b"
+                    stroke="#0a0a0a"
+                    stroke-width="3"
+                  />
+
+                  <polygon
+                    points="180,100 55,169 55,31"
+                    fill="none"
+                    stroke="#0a0a0a"
+                    stroke-width="3"
+                    stroke-dasharray="5,5"
+                  />
+                </svg>
+              </div>
+              <div class="scheme-description">
+                <p>
+                  <strong>120° spacing</strong> - Three evenly spaced colors
+                  create vibrant, balanced palettes with visual interest.
+                  Primary colors (Red, Yellow, Blue) are triadic!
+                </p>
+                <p class="example">Example: Red, Yellow, Blue</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="scheme-card">
+            <div class="scheme-header">
+              <h3>Tetradic</h3>
+              <span class="scheme-badge">5 colors</span>
+            </div>
+            <div class="scheme-content">
+              <div class="scheme-visual">
+                <svg viewBox="0 0 200 200" class="color-wheel">
+                  <circle
+                    cx="100"
+                    cy="100"
+                    r="80"
+                    fill="none"
+                    stroke="#0a0a0a"
+                    stroke-width="3"
+                  />
+                  <circle
+                    cx="100"
+                    cy="100"
+                    r="75"
+                    fill="url(#wheel-gradient)"
+                    opacity="0.3"
+                  />
+
+                  <circle
+                    cx="180"
+                    cy="100"
+                    r="12"
+                    fill="#60b5ff"
+                    stroke="#0a0a0a"
+                    stroke-width="3"
+                  />
+                  <circle
+                    cx="100"
+                    cy="180"
+                    r="12"
+                    fill="#b560ff"
+                    stroke="#0a0a0a"
+                    stroke-width="3"
+                  />
+                  <circle
+                    cx="20"
+                    cy="100"
+                    r="12"
+                    fill="#ff9149"
+                    stroke="#0a0a0a"
+                    stroke-width="3"
+                  />
+                  <circle
+                    cx="100"
+                    cy="20"
+                    r="12"
+                    fill="#49ff91"
+                    stroke="#0a0a0a"
+                    stroke-width="3"
+                  />
+
+                  <polygon
+                    points="180,100 100,180 20,100 100,20"
+                    fill="none"
+                    stroke="#0a0a0a"
+                    stroke-width="3"
+                    stroke-dasharray="5,5"
+                  />
+                </svg>
+              </div>
+              <div class="scheme-description">
+                <p>
+                  <strong>90° intervals</strong> - Four evenly spaced colors
+                  form two complementary pairs. Offers the most color variety
+                  while maintaining balance. Best for complex designs.
+                </p>
+                <p class="example">Example: Blue, Purple, Orange, Green</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="tech-details">
+          <h3>Technical Implementation</h3>
+          <div class="tech-content">
+            <div class="tech-point">
+              <strong>HSL Color Model</strong>
+              <p>
+                We convert colors to HSL (Hue, Saturation, Lightness) because
+                hue is measured in degrees (0-360°), making it perfect for
+                mathematical rotation around the color wheel.
+              </p>
+            </div>
+            <div class="tech-point">
+              <strong>Hue Rotation Formula</strong>
+              <p>
+                <code>newHue = (baseHue + rotation) % 360</code>
+                <br />
+                The modulo operator ensures we wrap around the wheel (e.g., 370°
+                becomes 10°).
+              </p>
+            </div>
+            <div class="tech-point">
+              <strong>Color Variations</strong>
+              <p>
+                We generate 5 colors by adding lighter and darker variations
+                (adjusting lightness ±15-20%) to ensure you have enough options
+                for your design.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <footer>
+      <span>Built with ❤️ by your's truly <strong>Atharv Dange</strong></span>
+      <div class="footer-socials">
+        <a
+          href="https://x.com/atharvdangedev"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="social-link twitter"
+          ><i class="fa-brands fa-x-twitter"></i> @atharvdangedev</a
+        >
+        <a
+          href="https://github.com/atharvdange618"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="social-link github"
+          ><i class="fa-brands fa-github"></i> @atharvdange618</a
+        >
+      </div>
+    </footer>
+    <script src="script.js"></script>
+  </body>
+</html>
