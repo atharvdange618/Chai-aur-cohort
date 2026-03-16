@@ -21,7 +21,45 @@
   Showcase of all the assignments I've done during the program.
 </p>
 
-- #### HTML Resume made with semantic HTML. [Visit here](https://resume.atharvdangedev.in)
-- #### Cursor Landing Page made with HTML and CSS. [Visit here](https://cursor.atharvdangedev.in)
-- #### Mintlify Landing page made with HTML and CSS. [Visit here](https://mintlify.atharvdangedev.in)
-- #### GitHub JS Classroom assignments
+## 🎨 Projects
+
+### Frontend Assignments
+
+- #### [HTML Resume](./html_resume/)
+
+  Semantic HTML resume with proper structure and accessibility. [Visit here](https://resume.atharvdangedev.in)
+
+- #### [Cursor Landing Page](./cursor_landing_page/)
+
+  Pixel-perfect recreation of Cursor AI landing page with HTML and CSS. [Visit here](https://cursor.atharvdangedev.in)
+
+- #### [Mintlify Landing Page](./mintlify_landing_page/)
+
+  Modern landing page clone with responsive design. [Visit here](https://mintlify.atharvdangedev.in)
+
+- #### [Color Palette Generator](./colour_palette_generator/)
+
+  Interactive color palette generator using color theory (complementary, analogous, triadic, tetradic schemes) with HSL conversion and SVG visualizations. Features educational content about color wheel mathematics.
+
+- #### [Dark Mode Toggle](./dark_mode_toggle/)
+
+  Neobrutalist-styled dark mode implementation with smooth transitions and persistent state using localStorage.
+
+- #### [Dynamic List Creator](./dynamic_list_creator/)
+  Interactive to-do list application with add, edit, delete functionality and local storage persistence.
+
+### JavaScript Practice
+
+- #### [GitHub JS Classroom Assignments](./github_js_classroom/)
+  Collection of JavaScript exercises covering:
+  - **Data Types (Foundation)**: Basic JavaScript fundamentals with Indian-themed problems
+  - **Data Types (Intermediate)**: Advanced data type manipulation and real-world scenarios
+  - **Conditionals**: Decision-making logic with practical examples
+  - **Functions**: Function declarations, expressions, and practical implementations
+  - **Loops**: Iteration patterns and array manipulation
+
+---
+
+<p align="center">
+  Built with ❤️ by <strong>Atharv Dange</strong>
+</p>
