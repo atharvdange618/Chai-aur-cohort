@@ -311,3 +311,13 @@
   </a>
 
 <br>
+
+### [`this` and `globalThis` in Node.js: What They Really Are](https://blog.atharvdangedev.in/posts/this-and-globalthis-in-nodejs-what-they-really-are)
+
+  <a href="https://blog.atharvdangedev.in/posts/this-and-globalthis-in-nodejs-what-they-really-are">
+      <p align=center>
+      <img width = "500px" alt="`this` and `globalThis` in Node.js: What They Really Are" src="./assets/globalThis.png">
+    <p>
+  </a>
+
+<br>
