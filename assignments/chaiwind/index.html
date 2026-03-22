@@ -1,0 +1,779 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>chai-wind - Utility-Class Engine. Zero Stylesheets.</title>
+    <link rel="icon" href="/logo.svg" type="image/svg+xml" />
+    <meta
+      name="description"
+      content="chai-wind is a proof-of-concept utility-class engine that injects styles inline at runtime - no stylesheets, no build step. Scan the DOM, match classes, apply inline CSS instantly."
+    />
+    <meta name="robots" content="index, follow" />
+    <link rel="canonical" href="https://chaiwind.atharvdangedev.in" />
+
+    <meta property="og:type" content="website" />
+    <meta
+      property="og:title"
+      content="chai-wind - Utility-Class Engine. Zero Stylesheets."
+    />
+    <meta
+      property="og:description"
+      content="A proof-of-concept utility-class engine that scans the DOM and injects inline styles at runtime - no build step, no stylesheets needed."
+    />
+    <meta property="og:url" content="https://chaiwind.atharvdangedev.in" />
+    <meta property="og:site_name" content="chai-wind" />
+    <meta
+      property="og:image"
+      content="https://chaiwind.atharvdangedev.in/home-og-image.png"
+    />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta
+      name="twitter:title"
+      content="chai-wind - Utility-Class Engine. Zero Stylesheets."
+    />
+    <meta
+      name="twitter:description"
+      content="A proof-of-concept utility-class engine that scans the DOM and injects inline styles at runtime - no build step, no stylesheets needed."
+    />
+    <meta
+      name="twitter:image"
+      content="https://chaiwind.atharvdangedev.in/home-og-image.png"
+    />
+
+    <meta name="theme-color" content="#ff9149" />
+
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "SoftwareApplication",
+        "name": "chai-wind",
+        "version": "1.0",
+        "applicationCategory": "DeveloperApplication",
+        "description": "A proof-of-concept utility-class engine that scans the DOM at runtime and applies inline CSS - no stylesheets, no build step required.",
+        "operatingSystem": "Any (Browser)",
+        "url": "https://chaiwind.atharvdangedev.in",
+        "author": {
+          "@type": "Person",
+          "name": "Atharv Dange",
+          "url": "https://github.com/atharvdange618"
+        },
+        "featureList": [
+          "DOM scanning via document.querySelectorAll",
+          "Runtime inline style injection",
+          "MutationObserver for dynamic elements",
+          "Runtime class registration via register()"
+        ],
+        "softwareVersion": "1.0",
+        "releaseNotes": "Proof of concept"
+      }
+    </script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&display=swap"
+      rel="stylesheet"
+    />
+
+    <style>
+      :root {
+        --blue: #60b5ff;
+        --orange: #ff9149;
+        --ink: #0a0a0a;
+        --cream: #fdfaf2;
+      }
+
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        font-family: "Space Mono", monospace;
+        background-color: var(--cream);
+        padding: 48px 20px;
+        min-height: 100vh;
+        background-image:
+          linear-gradient(var(--ink) 1px, transparent 1px),
+          linear-gradient(90deg, var(--ink) 1px, transparent 1px);
+        background-size: 40px 40px;
+        background-position: -1px -1px;
+        overflow-x: hidden;
+      }
+
+      body::before {
+        content: "";
+        position: fixed;
+        inset: 0;
+        background: rgba(253, 250, 242, 0.88);
+        pointer-events: none;
+        z-index: 0;
+      }
+
+      pre,
+      code {
+        font-family: "Space Mono", monospace;
+      }
+
+      @media (max-width: 640px) {
+        body {
+          padding: 28px 16px;
+        }
+      }
+
+      @media (max-width: 400px) {
+        body {
+          padding: 20px 12px;
+        }
+      }
+
+      pre {
+        overflow-x: auto;
+        word-break: normal;
+        white-space: pre;
+      }
+
+      @media (max-width: 360px) {
+        .inspector-row {
+          flex-direction: column;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <header
+      class="chai-max-w-xl chai-mx-auto chai-mb-6"
+      style="position: relative; z-index: 1"
+    >
+      <div class="chai-flex chai-items-center chai-gap-2 chai-mb-4">
+        <span
+          class="chai-bg-neo-orange chai-font-bold chai-text-xl chai-px-4 chai-py-2 chai-border-neo-thick chai-neo-shadow chai-uppercase chai-text-ink"
+          >chai-wind</span
+        >
+        <span
+          class="chai-bg-ink chai-text-cream chai-text-xs chai-px-4 chai-py-2 chai-font-bold chai-tracking-wide chai-uppercase"
+          style="border: 3px solid #0a0a0a"
+          >POC v1.0</span
+        >
+      </div>
+
+      <h1
+        style="
+          font-size: clamp(1.4rem, 5.5vw, 2.2rem);
+          font-weight: 700;
+          margin-bottom: 16px;
+          color: #0a0a0a;
+          text-transform: uppercase;
+          letter-spacing: -1px;
+          line-height: 1.1;
+          font-family: &quot;Space Mono&quot;, monospace;
+        "
+      >
+        Utility-class engine.<br />Zero stylesheets.
+      </h1>
+      <p
+        style="
+          font-size: 14px;
+          line-height: 1.7;
+          color: #0a0a0a;
+          margin-bottom: 24px;
+          font-family: &quot;Space Mono&quot;, monospace;
+        "
+      >
+        Every style on this page - including this paragraph - is injected inline
+        by <code>chai-wind.js</code>. Open DevTools and inspect any element.
+        You'll see <code>style="..."</code> and
+        <code>data-chai-applied="..."</code> on each one.
+      </p>
+
+      <div style="margin-bottom: 16px">
+        <a
+          href="docs.html"
+          style="
+            display: inline-block;
+            background: #0a0a0a;
+            color: #fdfaf2;
+            font-size: 12px;
+            font-weight: 700;
+            text-decoration: none;
+            padding: 8px 16px;
+            border: 3px solid #0a0a0a;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            box-shadow: 3px 3px 0 #ff9149;
+            font-family: &quot;Space Mono&quot;, monospace;
+          "
+          aria-label="View the technical deep dive documentation for chai-wind"
+        >
+          Technical Deep Dive →
+        </a>
+      </div>
+
+      <div
+        class="chai-flex chai-gap-2 chai-flex-wrap"
+        role="list"
+        aria-label="Feature highlights"
+      >
+        <span
+          class="chai-bg-neo-blue chai-px-4 chai-py-2 chai-border-neo chai-neo-shadow-sm chai-text-sm chai-font-bold chai-text-ink"
+          role="listitem"
+          >DOM scanning</span
+        >
+        <span
+          class="chai-bg-green chai-px-4 chai-py-2 chai-border-neo chai-neo-shadow-sm chai-text-sm chai-font-bold"
+          style="color: #15803d"
+          role="listitem"
+          >Inline injection</span
+        >
+        <span
+          class="chai-bg-purple chai-px-4 chai-py-2 chai-border-neo chai-neo-shadow-sm chai-text-sm chai-font-bold"
+          style="color: #6b21a8"
+          role="listitem"
+          >MutationObserver</span
+        >
+        <span
+          class="chai-bg-neo-orange chai-px-4 chai-py-2 chai-border-neo chai-neo-shadow-sm chai-text-sm chai-font-bold chai-text-ink"
+          role="listitem"
+          >Runtime register()</span
+        >
+      </div>
+    </header>
+
+    <main
+      class="chai-max-w-xl chai-mx-auto"
+      style="position: relative; z-index: 1"
+    >
+      <section
+        class="chai-bg-white chai-p-6 chai-border-neo-thick chai-neo-shadow-lg chai-mb-6"
+        aria-labelledby="how-it-works-heading"
+      >
+        <h2
+          id="how-it-works-heading"
+          class="chai-text-xl chai-font-bold chai-text-black chai-uppercase"
+          style="
+            letter-spacing: -0.5px;
+            border-bottom: 3px solid #0a0a0a;
+            padding-bottom: 12px;
+            margin-bottom: 20px;
+          "
+        >
+          How it works
+        </h2>
+
+        <ol
+          class="chai-flex chai-flex-col chai-gap-4"
+          style="list-style: none; padding: 0; margin: 0"
+        >
+          <li class="chai-flex chai-gap-4 chai-items-start">
+            <div
+              class="chai-bg-neo-orange chai-font-bold chai-text-sm chai-flex chai-items-center chai-justify-center chai-border-neo chai-text-ink"
+              style="min-width: 32px; height: 32px; flex-shrink: 0"
+              aria-hidden="true"
+            >
+              1
+            </div>
+            <div>
+              <p
+                class="chai-font-bold chai-text-black chai-text-sm chai-uppercase"
+                style="margin-bottom: 4px; letter-spacing: 0.5px"
+              >
+                Scan the DOM
+              </p>
+              <p class="chai-text-sm" style="color: #444">
+                On init, <code>document.querySelectorAll('*')</code> walks every
+                element. Each element's <code>classList</code> is checked
+                against <code>customStyles</code>.
+              </p>
+            </div>
+          </li>
+
+          <li class="chai-flex chai-gap-4 chai-items-start">
+            <div
+              class="chai-bg-neo-orange chai-font-bold chai-text-sm chai-flex chai-items-center chai-justify-center chai-border-neo chai-text-ink"
+              style="min-width: 32px; height: 32px; flex-shrink: 0"
+              aria-hidden="true"
+            >
+              2
+            </div>
+            <div>
+              <p
+                class="chai-font-bold chai-text-black chai-text-sm chai-uppercase"
+                style="margin-bottom: 4px; letter-spacing: 0.5px"
+              >
+                Match and parse
+              </p>
+              <p class="chai-text-sm" style="color: #444">
+                On a hit, the CSS string like
+                <code>"padding: 8px; margin: 0"</code> is split on
+                <code>;</code> and each declaration is set with
+                <code>el.style.setProperty()</code>. Safer than writing to
+                <code>cssText</code>.
+              </p>
+            </div>
+          </li>
+
+          <li class="chai-flex chai-gap-4 chai-items-start">
+            <div
+              class="chai-bg-neo-orange chai-font-bold chai-text-sm chai-flex chai-items-center chai-justify-center chai-border-neo chai-text-ink"
+              style="min-width: 32px; height: 32px; flex-shrink: 0"
+              aria-hidden="true"
+            >
+              3
+            </div>
+            <div>
+              <p
+                class="chai-font-bold chai-text-black chai-text-sm chai-uppercase"
+                style="margin-bottom: 4px; letter-spacing: 0.5px"
+              >
+                Watch for changes
+              </p>
+              <p class="chai-text-sm" style="color: #444">
+                A <code>MutationObserver</code> watches <code>childList</code>,
+                <code>subtree</code>, and <code>class</code> attribute changes.
+                Dynamically added elements get styled too.
+              </p>
+            </div>
+          </li>
+        </ol>
+      </section>
+
+      <section
+        class="chai-bg-white chai-p-6 chai-border-neo-thick chai-neo-shadow-lg chai-mb-6"
+        aria-labelledby="typography-heading"
+      >
+        <h2
+          id="typography-heading"
+          class="chai-text-xl chai-font-bold chai-text-black chai-uppercase"
+          style="
+            letter-spacing: -0.5px;
+            border-bottom: 3px solid #0a0a0a;
+            padding-bottom: 12px;
+            margin-bottom: 20px;
+          "
+        >
+          Typography
+        </h2>
+
+        <!-- Demo headings - these are showcasing the utility classes, not page headings.
+             Using <p role="heading"> to avoid polluting the document outline. -->
+        <p
+          class="chai-text-4xl chai-font-bold chai-text-black chai-mb-4 chai-uppercase"
+          style="letter-spacing: -1px"
+          role="heading"
+          aria-level="3"
+        >
+          Heading 1 - chai-text-4xl
+        </p>
+        <p
+          class="chai-text-3xl chai-font-bold chai-text-black chai-mb-4 chai-uppercase"
+          style="letter-spacing: -0.5px"
+          role="heading"
+          aria-level="3"
+        >
+          Heading 2 - chai-text-3xl
+        </p>
+        <p
+          class="chai-text-2xl chai-font-bold chai-text-black chai-mb-4 chai-uppercase"
+          role="heading"
+          aria-level="3"
+        >
+          Heading 3 - chai-text-2xl
+        </p>
+        <p class="chai-text-base chai-mb-4" style="color: #444">
+          This is body text. Class: <code>chai-text-base chai-text-gray</code>.
+          Scanned at runtime, injected inline. No stylesheet touched.
+        </p>
+        <p class="chai-text-sm chai-italic" style="color: #444">
+          Small italic text - chai-text-sm chai-italic
+        </p>
+      </section>
+
+      <section
+        class="chai-bg-white chai-p-6 chai-border-neo-thick chai-neo-shadow-lg chai-mb-6"
+        aria-labelledby="colors-heading"
+      >
+        <h2
+          id="colors-heading"
+          class="chai-text-xl chai-font-bold chai-text-black chai-uppercase"
+          style="
+            letter-spacing: -0.5px;
+            border-bottom: 3px solid #0a0a0a;
+            padding-bottom: 12px;
+            margin-bottom: 20px;
+          "
+        >
+          Colors
+        </h2>
+        <div
+          class="chai-flex chai-flex-wrap chai-gap-2"
+          role="list"
+          aria-label="Available color utilities"
+        >
+          <div
+            class="chai-bg-red chai-p-4 chai-border-neo chai-neo-shadow-sm chai-text-sm chai-font-bold"
+            style="color: #991b1b"
+            role="listitem"
+          >
+            chai-bg-red
+          </div>
+          <div
+            class="chai-bg-neo-blue chai-p-4 chai-border-neo chai-neo-shadow-sm chai-text-sm chai-font-bold chai-text-ink"
+            role="listitem"
+          >
+            chai-bg-blue
+          </div>
+          <div
+            class="chai-bg-green chai-p-4 chai-border-neo chai-neo-shadow-sm chai-text-sm chai-font-bold"
+            style="color: #166534"
+            role="listitem"
+          >
+            chai-bg-green
+          </div>
+          <div
+            class="chai-bg-purple chai-p-4 chai-border-neo chai-neo-shadow-sm chai-text-sm chai-font-bold"
+            style="color: #581c87"
+            role="listitem"
+          >
+            chai-bg-purple
+          </div>
+          <div
+            class="chai-bg-neo-orange chai-p-4 chai-border-neo chai-neo-shadow-sm chai-text-sm chai-font-bold chai-text-ink"
+            role="listitem"
+          >
+            chai-bg-orange
+          </div>
+          <div
+            class="chai-bg-ink chai-p-4 chai-border-neo chai-neo-shadow-sm chai-text-sm chai-font-bold chai-text-cream"
+            role="listitem"
+          >
+            chai-bg-dark
+          </div>
+        </div>
+      </section>
+
+      <section
+        class="chai-bg-white chai-p-6 chai-border-neo-thick chai-neo-shadow-lg chai-mb-6"
+        aria-labelledby="example-heading"
+      >
+        <h2
+          id="example-heading"
+          class="chai-text-xl chai-font-bold chai-text-black chai-uppercase"
+          style="
+            letter-spacing: -0.5px;
+            border-bottom: 3px solid #0a0a0a;
+            padding-bottom: 12px;
+            margin-bottom: 20px;
+          "
+        >
+          The original example
+        </h2>
+        <p class="chai-text-sm chai-mb-4" style="color: #444">
+          This is the exact use case from the spec. Inspect this heading - it
+          has no stylesheet, just a class and a data attribute.
+        </p>
+        <!-- Demo element - using a <p> with heading role to avoid a second <h1> in the document -->
+        <p
+          class="chai-p-2 chai-text-2xl chai-font-bold chai-text-black chai-bg-neo-orange chai-border-neo chai-neo-shadow chai-uppercase"
+          style="letter-spacing: -0.5px"
+        >
+          hello world
+        </p>
+        <pre
+          class="chai-text-xs chai-mt-4 chai-p-4 chai-bg-ink chai-text-cream"
+          style="overflow-x: auto; line-height: 1.6; border: 3px solid #fdfaf2"
+          aria-label="Code example showing before and after chai-wind processes an element"
+        >
+&lt;h1 class="chai-p-2 chai-text-2xl chai-font-bold ..."&gt;
+  hello world
+&lt;/h1&gt;
+
+&darr; After chai-wind runs:
+
+&lt;h1 class="chai-p-2 ..."
+    style="padding: 8px; font-size: 24px; font-weight: 700; ..."
+    data-chai-applied="chai-p-2 chai-text-2xl chai-font-bold ..."&gt;
+  hello world
+&lt;/h1&gt;</pre
+        >
+      </section>
+
+      <section
+        class="chai-bg-white chai-p-6 chai-border-neo-thick chai-neo-shadow-lg chai-mb-6"
+        id="dynamic-section"
+        aria-labelledby="mutation-heading"
+      >
+        <h2
+          id="mutation-heading"
+          class="chai-text-xl chai-font-bold chai-text-black chai-uppercase"
+          style="
+            letter-spacing: -0.5px;
+            border-bottom: 3px solid #0a0a0a;
+            padding-bottom: 12px;
+            margin-bottom: 20px;
+          "
+        >
+          MutationObserver - dynamic injection
+        </h2>
+        <p class="chai-text-sm chai-mb-4" style="color: #444">
+          Click the button. A new element is created and injected into the DOM
+          <em>after</em> the initial scan. The MutationObserver catches it and
+          styles it automatically.
+        </p>
+
+        <button
+          id="inject-btn"
+          type="button"
+          class="chai-bg-ink chai-text-cream chai-px-4 chai-py-2 chai-font-bold chai-text-sm chai-cursor-pointer chai-border-neo chai-neo-shadow chai-uppercase chai-tracking-wide"
+          style="cursor: pointer"
+          onclick="injectDynamic()"
+          aria-label="Inject a dynamically styled element into the page"
+        >
+          + Inject dynamic element
+        </button>
+
+        <div
+          id="dynamic-output"
+          class="chai-flex chai-flex-col chai-gap-2 chai-mt-4"
+          aria-live="polite"
+          aria-label="Dynamic elements container"
+        ></div>
+      </section>
+
+      <section
+        class="chai-bg-white chai-p-6 chai-border-neo-thick chai-neo-shadow-lg chai-mb-6"
+        aria-labelledby="register-heading"
+      >
+        <h2
+          id="register-heading"
+          class="chai-text-xl chai-font-bold chai-text-black chai-uppercase"
+          style="
+            letter-spacing: -0.5px;
+            border-bottom: 3px solid #0a0a0a;
+            padding-bottom: 12px;
+            margin-bottom: 20px;
+          "
+        >
+          Runtime register()
+        </h2>
+        <p class="chai-text-sm chai-mb-4" style="color: #444">
+          You can register new classes at runtime via
+          <code>ChaiWind.register()</code>. The element below has class
+          <code>chai-custom-card</code> which doesn't exist yet - click to
+          define and apply it.
+        </p>
+
+        <div
+          id="unresolved-card"
+          class="chai-custom-card chai-p-4 chai-border-neo"
+        >
+          <p class="chai-text-sm chai-text-black">
+            I have class <code>chai-custom-card</code>. Right now it does
+            nothing. Register it below.
+          </p>
+        </div>
+
+        <button
+          type="button"
+          class="chai-bg-green chai-text-sm chai-font-bold chai-px-4 chai-py-2 chai-border-neo chai-neo-shadow chai-cursor-pointer chai-mt-4 chai-uppercase"
+          style="color: #166534; cursor: pointer"
+          onclick="registerCustom()"
+          aria-label="Register the chai-custom-card utility class at runtime"
+        >
+          Register chai-custom-card
+        </button>
+      </section>
+
+      <section
+        class="chai-bg-ink chai-p-6 chai-mb-6"
+        style="border: 4px solid #fdfaf2; box-shadow: 7px 7px 0px #fdfaf2"
+        aria-labelledby="inspector-heading"
+      >
+        <h2
+          id="inspector-heading"
+          class="chai-text-xl chai-font-bold chai-text-cream chai-uppercase"
+          style="
+            letter-spacing: -0.5px;
+            border-bottom: 3px solid #fdfaf2;
+            padding-bottom: 12px;
+            margin-bottom: 20px;
+          "
+        >
+          Live class inspector
+        </h2>
+        <p class="chai-text-sm chai-mb-4" style="color: #94a3b8">
+          Type any chai class name and see what style it maps to.
+        </p>
+        <div class="chai-flex chai-gap-2 inspector-row">
+          <label
+            for="inspector-input"
+            class="visually-hidden"
+            style="
+              position: absolute;
+              width: 1px;
+              height: 1px;
+              overflow: hidden;
+              clip: rect(0, 0, 0, 0);
+              white-space: nowrap;
+            "
+          >
+            Enter a chai class name to inspect
+          </label>
+          <input
+            id="inspector-input"
+            type="text"
+            placeholder="e.g. chai-p-4"
+            class="chai-px-4 chai-py-2 chai-text-sm"
+            style="
+              flex: 1;
+              border: 3px solid #fdfaf2;
+              background: #1e293b;
+              color: white;
+              outline: none;
+              font-family: &quot;Space Mono&quot;, monospace;
+            "
+            oninput="inspectClass(this.value)"
+            aria-controls="inspector-output"
+            aria-label="Enter a chai class name to inspect"
+          />
+        </div>
+        <pre
+          id="inspector-output"
+          class="chai-mt-4 chai-text-sm chai-p-4"
+          style="
+            color: #86efac;
+            background: #134e4a;
+            min-height: 48px;
+            border: 3px solid #86efac;
+            line-height: 1.6;
+            font-family: &quot;Space Mono&quot;, monospace;
+            overflow-x: auto;
+          "
+          aria-live="polite"
+          aria-label="Class inspection result"
+        >
+→ result appears here</pre
+        >
+      </section>
+    </main>
+
+    <footer
+      class="chai-max-w-xl chai-mx-auto"
+      style="
+        position: relative;
+        z-index: 1;
+        margin-top: 16px;
+        padding: 14px 24px;
+        border: 4px solid #0a0a0a;
+        box-shadow: 5px 5px 0px #0a0a0a;
+        background-color: #ff9149;
+        font-family: &quot;Space Mono&quot;, monospace;
+        font-size: 13px;
+        color: #0a0a0a;
+        text-align: center;
+        text-transform: uppercase;
+        font-weight: 700;
+        letter-spacing: 0.5px;
+      "
+    >
+      <p style="margin: 0">
+        chai-wind POC - zero stylesheets, 100% inline &middot;
+        <a
+          href="docs.html"
+          style="color: #0a0a0a; text-decoration: underline"
+          aria-label="Read the technical deep dive docs"
+          >Docs</a
+        >
+        &middot;
+        <a
+          href="https://github.com/atharvdange618/Chaiwind"
+          rel="noopener noreferrer"
+          target="_blank"
+          style="color: #0a0a0a; text-decoration: underline"
+          aria-label="View source on GitHub"
+          >GitHub</a
+        >
+        &middot;
+        <a
+          href="https://www.npmjs.com/package/chaiwindjs"
+          rel="noopener noreferrer"
+          target="_blank"
+          style="color: #0a0a0a; text-decoration: underline"
+          aria-label="View on npm"
+          >npm</a
+        >
+      </p>
+    </footer>
+
+    <script src="chai-wind.js"></script>
+
+    <script>
+      let dynamicCount = 0;
+      const colors = [
+        "chai-bg-neo-blue",
+        "chai-bg-purple",
+        "chai-bg-red",
+        "chai-bg-green",
+        "chai-bg-neo-orange",
+      ];
+
+      function injectDynamic() {
+        dynamicCount++;
+        const color = colors[dynamicCount % colors.length];
+        const el = document.createElement("div");
+
+        el.className = `${color} chai-p-4 chai-border-neo chai-neo-shadow-sm chai-text-sm chai-font-bold`;
+        el.style.color = "#0a0a0a";
+        el.innerHTML = `
+        <strong>Dynamic element #${dynamicCount}</strong> - added after page load.<br>
+        <span style="font-size:11px;opacity:0.7">classes: ${el.className}</span>
+      `;
+
+        document.getElementById("dynamic-output").appendChild(el);
+      }
+
+      function registerCustom() {
+        ChaiWind.register({
+          "chai-custom-card": `
+          background-color: #ff9149;
+          border: 4px solid #0a0a0a;
+          border-radius: 0px;
+          box-shadow: 5px 5px 0 #0a0a0a;
+        `,
+        });
+      }
+
+      function inspectClass(value) {
+        const out = document.getElementById("inspector-output");
+        const trimmed = value.trim();
+        if (!trimmed) {
+          out.textContent = "→ result appears here";
+          return;
+        }
+        const btn = document.createElement("button");
+        btn.className = trimmed;
+        document.body.appendChild(btn);
+        ChaiWind.refresh();
+        const injected = btn.getAttribute("style") || null;
+        document.body.removeChild(btn);
+
+        if (injected) {
+          out.textContent = `✓ "${trimmed}" maps to:\n\n${injected
+            .split(";")
+            .filter(Boolean)
+            .map((s) => "  " + s.trim())
+            .join(";\n")}`;
+        } else {
+          out.textContent = `✗ "${trimmed}" - no match in customStyles`;
+        }
+      }
+    </script>
+  </body>
+</html>

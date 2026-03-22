@@ -1,0 +1,3533 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" href="/logo.svg" type="image/svg+xml" />
+    <title>How chai-wind Works - Technical Deep Dive</title>
+    <meta
+      name="description"
+      content="A detailed technical walkthrough of how chai-wind works: DOM scanning, inline style injection, MutationObserver live-watching, RAF batching, and the runtime class registration API."
+    />
+    <meta name="robots" content="index, follow" />
+    <link rel="canonical" href="https://chaiwind.atharvdangedev.in/docs" />
+
+    <meta property="og:type" content="article" />
+    <meta
+      property="og:title"
+      content="How chai-wind Works - Technical Deep Dive"
+    />
+    <meta
+      property="og:description"
+      content="DOM scanning, inline style injection, MutationObserver, and runtime class registration. How a zero-stylesheet CSS engine actually works."
+    />
+    <meta property="og:url" content="https://chaiwind.atharvdangedev.in/docs" />
+    <meta
+      property="og:image"
+      content="https://chaiwind.atharvdangedev.in/docs-og-image.png"
+    />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta
+      name="twitter:title"
+      content="How chai-wind Works - Technical Deep Dive"
+    />
+    <meta
+      name="twitter:description"
+      content="DOM scanning, inline style injection, MutationObserver, and runtime class registration. How a zero-stylesheet CSS engine actually works."
+    />
+    <meta
+      name="twitter:image"
+      content="https://chaiwind.atharvdangedev.in/docs-og-image.png"
+    />
+    <meta name="theme-color" content="#ff9149" />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&display=swap"
+      rel="stylesheet"
+    />
+
+    <style>
+      :root {
+        --blue: #60b5ff;
+        --orange: #ff9149;
+        --ink: #0a0a0a;
+        --cream: #fdfaf2;
+      }
+
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        font-family: "Space Mono", monospace;
+        background-color: var(--cream);
+        padding: 48px 20px 80px;
+        min-height: 100vh;
+        background-image:
+          linear-gradient(var(--ink) 1px, transparent 1px),
+          linear-gradient(90deg, var(--ink) 1px, transparent 1px);
+        background-size: 40px 40px;
+        background-position: -1px -1px;
+        overflow-x: hidden;
+      }
+
+      body::before {
+        content: "";
+        position: fixed;
+        inset: 0;
+        background: rgba(253, 250, 242, 0.9);
+        pointer-events: none;
+        z-index: 0;
+      }
+
+      pre,
+      code {
+        font-family: "Space Mono", monospace;
+      }
+
+      pre {
+        overflow-x: auto;
+      }
+
+      .layout {
+        max-width: 768px;
+        margin: 0 auto;
+        position: relative;
+        z-index: 1;
+      }
+
+      /* ── Section card ── */
+      .section {
+        background: var(--cream);
+        padding: 32px;
+        border: 4px solid var(--ink);
+        box-shadow: 7px 7px 0 var(--ink);
+        margin-bottom: 32px;
+      }
+
+      .section-title {
+        font-size: 1rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: -0.3px;
+        border-bottom: 3px solid var(--ink);
+        padding-bottom: 12px;
+        margin: 0 0 24px;
+        color: var(--ink);
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+
+      .section-num {
+        background: var(--orange);
+        border: 3px solid var(--ink);
+        font-size: 11px;
+        font-weight: 700;
+        padding: 2px 8px;
+        min-width: 34px;
+        text-align: center;
+        flex-shrink: 0;
+      }
+
+      /* ── Prose ── */
+      .prose {
+        font-size: 13px;
+        line-height: 1.85;
+        color: #333;
+        margin: 0 0 18px;
+      }
+
+      .prose strong {
+        color: var(--ink);
+      }
+
+      .prose code {
+        background: #ede9df;
+        border: 1px solid #c8c3b6;
+        padding: 1px 5px;
+        font-size: 12px;
+      }
+
+      /* ── Code block ── */
+      .code-block {
+        background: var(--ink);
+        color: var(--cream);
+        padding: 20px 24px;
+        font-size: 12px;
+        line-height: 1.75;
+        overflow-x: auto;
+        border: 3px solid var(--cream);
+        margin: 20px 0;
+      }
+
+      /* ── SVG wrapper ── */
+      .svg-wrap {
+        margin: 24px 0;
+        border: 3px solid var(--ink);
+        background: #fff;
+        overflow: hidden;
+      }
+
+      .svg-wrap svg {
+        display: block;
+        width: 100%;
+        height: auto;
+      }
+
+      .svg-caption {
+        font-size: 11px;
+        color: #666;
+        text-align: center;
+        padding: 6px 12px 8px;
+        border-top: 2px solid #e5e1d8;
+        font-style: italic;
+      }
+
+      /* ── TOC ── */
+      .toc {
+        background: var(--ink);
+        color: var(--cream);
+        padding: 24px 32px;
+        border: 4px solid var(--ink);
+        box-shadow: 7px 7px 0 var(--orange);
+        margin-bottom: 40px;
+      }
+
+      .toc-title {
+        font-size: 11px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+        color: var(--orange);
+        margin: 0 0 16px;
+      }
+
+      .toc-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 8px 24px;
+      }
+
+      @media (max-width: 520px) {
+        .toc-list {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      .toc-list li a {
+        color: var(--cream);
+        text-decoration: none;
+        font-size: 12px;
+        font-weight: 700;
+        text-transform: uppercase;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        letter-spacing: 0.3px;
+      }
+
+      .toc-list li a:hover {
+        color: var(--blue);
+      }
+
+      .toc-list li a::before {
+        content: attr(data-num);
+        background: var(--orange);
+        color: var(--ink);
+        font-size: 10px;
+        font-weight: 700;
+        padding: 1px 6px;
+        min-width: 24px;
+        text-align: center;
+        flex-shrink: 0;
+      }
+
+      /* ── Callouts ── */
+      .callout {
+        border-left: 4px solid var(--blue);
+        background: rgba(96, 181, 255, 0.07);
+        padding: 12px 16px;
+        margin: 16px 0;
+        font-size: 12px;
+        line-height: 1.75;
+        color: #333;
+      }
+
+      .callout.orange {
+        border-left-color: var(--orange);
+        background: rgba(255, 145, 73, 0.07);
+      }
+
+      .callout.green {
+        border-left-color: #22c55e;
+        background: rgba(34, 197, 94, 0.07);
+      }
+
+      .callout code {
+        background: rgba(0, 0, 0, 0.07);
+        padding: 1px 4px;
+        font-size: 11px;
+      }
+
+      /* ── Table ── */
+      .data-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 12px;
+        margin: 20px 0;
+      }
+
+      .data-table th {
+        background: var(--ink);
+        color: var(--cream);
+        padding: 8px 12px;
+        text-align: left;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+
+      .data-table td {
+        border: 2px solid var(--ink);
+        padding: 8px 12px;
+        vertical-align: top;
+        line-height: 1.6;
+      }
+
+      .data-table tr:nth-child(even) td {
+        background: #f5f2e9;
+      }
+
+      /* ── Badges ── */
+      .badge {
+        display: inline-block;
+        font-size: 10px;
+        font-weight: 700;
+        text-transform: uppercase;
+        padding: 2px 8px;
+        border: 2px solid var(--ink);
+      }
+
+      .badge-green {
+        background: #86efac;
+        color: #166534;
+      }
+
+      .badge-red {
+        background: #fecaca;
+        color: #991b1b;
+      }
+
+      .badge-blue {
+        background: var(--blue);
+        color: var(--ink);
+      }
+
+      .badge-orange {
+        background: var(--orange);
+        color: var(--ink);
+      }
+
+      /* ── API method block ── */
+      .api-method {
+        border: 3px solid var(--ink);
+        margin-bottom: 20px;
+      }
+
+      .api-method-header {
+        background: var(--ink);
+        color: var(--cream);
+        padding: 10px 16px;
+        font-size: 13px;
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+
+      .api-method-body {
+        padding: 16px;
+        font-size: 12px;
+        line-height: 1.75;
+        color: #333;
+      }
+
+      .api-method-body code {
+        background: #ede9df;
+        border: 1px solid #c8c3b6;
+        padding: 1px 5px;
+        font-size: 11px;
+        font-family: "Space Mono", monospace;
+      }
+
+      /* ── Takeaways ── */
+      .takeaway-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+      }
+
+      .takeaway-list li {
+        display: flex;
+        gap: 12px;
+        align-items: flex-start;
+        font-size: 12px;
+        line-height: 1.75;
+        color: #333;
+      }
+
+      .takeaway-list li::before {
+        content: "▸";
+        color: var(--orange);
+        font-size: 14px;
+        font-weight: 700;
+        flex-shrink: 0;
+        margin-top: 1px;
+      }
+
+      .takeaway-list li strong {
+        color: var(--ink);
+      }
+
+      @media (max-width: 640px) {
+        body {
+          padding: 24px 14px 60px;
+        }
+
+        .section {
+          padding: 20px 16px;
+          margin-bottom: 20px;
+          box-shadow: 5px 5px 0 var(--ink);
+        }
+
+        .toc {
+          padding: 16px;
+          margin-bottom: 28px;
+          box-shadow: 5px 5px 0 var(--orange);
+        }
+
+        .toc-list {
+          gap: 6px 16px;
+        }
+
+        .toc-list li a {
+          font-size: 11px;
+        }
+
+        .section-title {
+          font-size: 0.85rem;
+          gap: 8px;
+          flex-wrap: wrap;
+        }
+
+        .section-num {
+          font-size: 10px;
+          padding: 2px 6px;
+        }
+
+        .code-block {
+          padding: 14px 14px;
+          font-size: 11px;
+        }
+
+        .api-method-header {
+          flex-wrap: wrap;
+          row-gap: 6px;
+          font-size: 12px;
+        }
+
+        .api-method-body {
+          padding: 12px;
+        }
+
+        .data-table {
+          display: block;
+          overflow-x: auto;
+          -webkit-overflow-scrolling: touch;
+        }
+
+        .callout {
+          padding: 10px 12px;
+          font-size: 12px;
+        }
+
+        .prose {
+          font-size: 12px;
+        }
+
+        [aria-label="Breadcrumb"] div > span:last-child {
+          margin-left: 0;
+        }
+      }
+
+      @media (max-width: 400px) {
+        body {
+          padding: 16px 10px 48px;
+        }
+
+        .section {
+          padding: 16px 12px;
+        }
+
+        .toc {
+          padding: 14px 12px;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="layout">
+      <nav style="margin-bottom: 36px" aria-label="Breadcrumb">
+        <div
+          style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap"
+        >
+          <a
+            href="index.html"
+            style="
+              background: var(--ink);
+              color: var(--cream);
+              font-size: 12px;
+              font-weight: 700;
+              text-decoration: none;
+              padding: 8px 16px;
+              border: 3px solid var(--ink);
+              text-transform: uppercase;
+              letter-spacing: 1px;
+              box-shadow: 3px 3px 0 var(--orange);
+              display: inline-block;
+            "
+            >← chai-wind POC</a
+          >
+          <span style="font-size: 12px; color: #888; font-family: monospace"
+            >/ docs</span
+          >
+          <span
+            style="
+              background: var(--blue);
+              font-size: 11px;
+              font-weight: 700;
+              padding: 4px 10px;
+              border: 3px solid var(--ink);
+              text-transform: uppercase;
+              color: var(--ink);
+              margin-left: auto;
+            "
+            >Technical Deep Dive</span
+          >
+        </div>
+      </nav>
+
+      <header style="margin-bottom: 36px">
+        <div
+          style="
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 16px;
+          "
+        >
+          <span
+            style="
+              background: var(--orange);
+              font-weight: 700;
+              font-size: 13px;
+              padding: 4px 12px;
+              border: 3px solid var(--ink);
+              box-shadow: 3px 3px 0 var(--ink);
+              text-transform: uppercase;
+            "
+            >chai-wind</span
+          >
+          <span
+            style="
+              background: var(--ink);
+              color: var(--cream);
+              font-size: 11px;
+              padding: 4px 10px;
+              font-weight: 700;
+              text-transform: uppercase;
+              letter-spacing: 1px;
+              border: 3px solid var(--ink);
+            "
+            >POC v0.1 &mdash; Docs</span
+          >
+        </div>
+        <h1
+          style="
+            font-size: clamp(1.6rem, 5vw, 2.6rem);
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: -2px;
+            line-height: 1.05;
+            margin: 0 0 16px;
+            color: var(--ink);
+            font-family: &quot;Space Mono&quot;, monospace;
+          "
+        >
+          How it actually<br />works.
+        </h1>
+        <p
+          style="
+            font-size: 13px;
+            line-height: 1.85;
+            color: #444;
+            max-width: 540px;
+            margin: 0;
+          "
+        >
+          DOM scanning &rarr; string parsing &rarr; inline injection &rarr;
+          live-watching via MutationObserver. Every part explained with diagrams
+          and annotated code.
+        </p>
+      </header>
+
+      <nav class="toc" aria-label="Table of contents">
+        <p class="toc-title">Contents</p>
+        <ol class="toc-list">
+          <li>
+            <a href="#style-map" data-num="01">The Style Map</a>
+          </li>
+          <li>
+            <a href="#parsing" data-num="02">String Parsing</a>
+          </li>
+          <li>
+            <a href="#process-element" data-num="03">processElement()</a>
+          </li>
+          <li>
+            <a href="#scan-dom" data-num="04">scanDOM()</a>
+          </li>
+          <li>
+            <a href="#mutation-observer" data-num="05">MutationObserver</a>
+          </li>
+          <li>
+            <a href="#raf-batching" data-num="06">RAF Batching</a>
+          </li>
+          <li>
+            <a href="#init" data-num="07">Init &amp; readyState</a>
+          </li>
+          <li>
+            <a href="#data-flow" data-num="08">Full Data Flow</a>
+          </li>
+          <li>
+            <a href="#public-api" data-num="09">Public API</a>
+          </li>
+          <li>
+            <a href="#takeaways" data-num="10">Key Takeaways</a>
+          </li>
+        </ol>
+      </nav>
+
+      <section class="section" id="style-map" aria-labelledby="h-style-map">
+        <h2 class="section-title" id="h-style-map">
+          <span class="section-num">01</span>
+          The Style Map
+        </h2>
+        <p class="prose">
+          Before anything can be scanned or injected, chai-wind needs a
+          <strong>source of truth</strong>: a plain JavaScript object mapping
+          class name strings to CSS declaration strings. Everything else in the
+          engine reads from or writes to this object.
+        </p>
+
+        <div class="code-block" aria-label="customStyles object structure">
+          <span style="color: #fde68a">const</span> customStyles = {
+          <span style="color: #86efac">"chai-p-2"</span>:
+          <span style="color: #60b5ff">"padding: 8px"</span>,
+          <span style="color: #86efac">"chai-flex"</span>:
+          <span style="color: #60b5ff">"display: flex"</span>,
+          <span style="color: #86efac">"chai-text-lg"</span>:
+          <span style="color: #60b5ff"
+            >"font-size: 18px; line-height: 28px"</span
+          >, <span style="color: #888">// ← multi-property</span>
+          <span style="color: #86efac">"chai-neo-shadow"</span>:
+          <span style="color: #60b5ff">"box-shadow: 5px 5px 0px #0a0a0a"</span>,
+          <span style="color: #888">// ... 100+ more</span>
+          };
+        </div>
+
+        <div
+          class="svg-wrap"
+          role="img"
+          aria-label="Diagram showing customStyles as a key-value lookup table with class names as keys and CSS strings as values"
+        >
+          <svg
+            viewBox="0 0 680 260"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+            style="font-family: &quot;Space Mono&quot;, monospace"
+          >
+            <rect x="16" y="16" width="288" height="34" fill="#0a0a0a" />
+            <rect x="308" y="16" width="356" height="34" fill="#0a0a0a" />
+            <text
+              x="28"
+              y="38"
+              font-size="10"
+              font-weight="700"
+              fill="#fdfaf2"
+              letter-spacing="1"
+            >
+              CLASS NAME (key)
+            </text>
+            <text
+              x="320"
+              y="38"
+              font-size="10"
+              font-weight="700"
+              fill="#fdfaf2"
+              letter-spacing="1"
+            >
+              CSS STRING (value)
+            </text>
+            <line
+              x1="304"
+              y1="16"
+              x2="304"
+              y2="260"
+              stroke="#0a0a0a"
+              stroke-width="3"
+            />
+
+            <rect x="16" y="50" width="288" height="42" fill="#dbeafe" />
+            <rect x="308" y="50" width="356" height="42" fill="#eff6ff" />
+            <text x="28" y="68" font-size="12" font-weight="700" fill="#1e40af">
+              "chai-p-2"
+            </text>
+            <text x="28" y="84" font-size="10" fill="#3b82f6">
+              single property
+            </text>
+            <text x="320" y="76" font-size="12" fill="#374151">
+              "padding: 8px"
+            </text>
+
+            <rect x="16" y="92" width="288" height="42" fill="#fef3c7" />
+            <rect x="308" y="92" width="356" height="42" fill="#fffbeb" />
+            <text
+              x="28"
+              y="110"
+              font-size="12"
+              font-weight="700"
+              fill="#92400e"
+            >
+              "chai-flex"
+            </text>
+            <text x="28" y="126" font-size="10" fill="#b45309">
+              single property
+            </text>
+            <text x="320" y="118" font-size="12" fill="#374151">
+              "display: flex"
+            </text>
+
+            <rect x="16" y="134" width="288" height="42" fill="#dcfce7" />
+            <rect x="308" y="134" width="356" height="42" fill="#f0fdf4" />
+            <text
+              x="28"
+              y="152"
+              font-size="12"
+              font-weight="700"
+              fill="#166534"
+            >
+              "chai-text-lg"
+            </text>
+            <text
+              x="28"
+              y="168"
+              font-size="10"
+              fill="#16a34a"
+              font-weight="700"
+            >
+              multi-property ▲
+            </text>
+            <text x="320" y="148" font-size="11" fill="#374151">
+              "font-size: 18px;
+            </text>
+            <text x="320" y="166" font-size="11" fill="#374151">
+              line-height: 28px"
+            </text>
+
+            <rect x="16" y="176" width="288" height="42" fill="#fff7ed" />
+            <rect x="308" y="176" width="356" height="42" fill="#fff7ed" />
+            <text
+              x="28"
+              y="194"
+              font-size="12"
+              font-weight="700"
+              fill="#9a3412"
+            >
+              "chai-neo-shadow"
+            </text>
+            <text x="28" y="210" font-size="10" fill="#c2410c">
+              single property
+            </text>
+            <text x="320" y="200" font-size="11" fill="#374151">
+              "box-shadow: 5px 5px 0px #0a0a0a"
+            </text>
+
+            <rect x="16" y="218" width="288" height="36" fill="#f5f2e9" />
+            <rect x="308" y="218" width="356" height="36" fill="#f5f2e9" />
+            <text x="28" y="241" font-size="11" fill="#888">
+              ... 100+ more classes
+            </text>
+            <text x="320" y="241" font-size="11" fill="#888">
+              ... mapped to CSS declaration strings
+            </text>
+
+            <rect
+              x="16"
+              y="16"
+              width="648"
+              height="238"
+              fill="none"
+              stroke="#0a0a0a"
+              stroke-width="3"
+            />
+            <line
+              x1="16"
+              y1="92"
+              x2="664"
+              y2="92"
+              stroke="#0a0a0a"
+              stroke-width="1.5"
+            />
+            <line
+              x1="16"
+              y1="134"
+              x2="664"
+              y2="134"
+              stroke="#0a0a0a"
+              stroke-width="1.5"
+            />
+            <line
+              x1="16"
+              y1="176"
+              x2="664"
+              y2="176"
+              stroke="#0a0a0a"
+              stroke-width="1.5"
+            />
+            <line
+              x1="16"
+              y1="218"
+              x2="664"
+              y2="218"
+              stroke="#0a0a0a"
+              stroke-width="1.5"
+            />
+          </svg>
+          <p class="svg-caption">
+            customStyles - the engine's complete knowledge base. A plain JS
+            object. O(1) lookup.
+          </p>
+        </div>
+
+        <div class="callout">
+          <strong>Why a plain object and not a <code>Map</code>?</strong> Two
+          reasons: object literals are more readable for this use case, and
+          <code>Object.assign()</code> makes runtime merging trivial - which is
+          exactly what the <code>register()</code> API uses to extend the style
+          map at runtime.
+        </div>
+        <div class="callout orange">
+          <strong>Multi-property classes</strong> - A single key like
+          <code>"chai-text-lg"</code> maps to multiple semicolon-separated
+          declarations. One class, many properties. Tailwind does the same
+          internally for spacing, typography, and layout utilities.
+        </div>
+      </section>
+
+      <section class="section" id="parsing" aria-labelledby="h-parsing">
+        <h2 class="section-title" id="h-parsing">
+          <span class="section-num">02</span>
+          applyStyleString()
+        </h2>
+        <p class="prose">
+          Once a class name matches, we have a CSS string like
+          <code>"padding-left: 16px; padding-right: 16px"</code>. Three
+          different browser APIs can write inline styles - only one is safe.
+        </p>
+
+        <div
+          class="svg-wrap"
+          role="img"
+          aria-label="Comparison of cssText, setAttribute, and setProperty for writing inline styles"
+        >
+          <svg
+            viewBox="0 0 680 198"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+            style="font-family: &quot;Space Mono&quot;, monospace"
+          >
+            <text x="16" y="28" font-size="12" font-weight="700" fill="#0a0a0a">
+              Three ways to write inline styles
+            </text>
+
+            <rect
+              x="16"
+              y="40"
+              width="648"
+              height="46"
+              fill="#fee2e2"
+              stroke="#0a0a0a"
+              stroke-width="2"
+            />
+            <rect x="16" y="40" width="5" height="46" fill="#ef4444" />
+            <text x="32" y="58" font-size="11" font-weight="700" fill="#991b1b">
+              el.style.cssText = "..."
+            </text>
+            <text x="32" y="76" font-size="10" fill="#374151">
+              Overwrites ALL inline styles. If another script already set
+              style="color:red", that's gone.
+            </text>
+            <rect x="604" y="50" width="52" height="22" fill="#ef4444" />
+            <text
+              x="630"
+              y="66"
+              font-size="9"
+              font-weight="700"
+              fill="#fff"
+              text-anchor="middle"
+            >
+              AVOID
+            </text>
+
+            <rect
+              x="16"
+              y="96"
+              width="648"
+              height="46"
+              fill="#fee2e2"
+              stroke="#0a0a0a"
+              stroke-width="2"
+            />
+            <rect x="16" y="96" width="5" height="46" fill="#ef4444" />
+            <text
+              x="32"
+              y="114"
+              font-size="11"
+              font-weight="700"
+              fill="#991b1b"
+            >
+              el.setAttribute('style', '...')
+            </text>
+            <text x="32" y="132" font-size="10" fill="#374151">
+              Also replaces the entire style attribute string. Same destructive
+              problem as cssText.
+            </text>
+            <rect x="604" y="106" width="52" height="22" fill="#ef4444" />
+            <text
+              x="630"
+              y="122"
+              font-size="9"
+              font-weight="700"
+              fill="#fff"
+              text-anchor="middle"
+            >
+              AVOID
+            </text>
+
+            <rect
+              x="16"
+              y="152"
+              width="648"
+              height="38"
+              fill="#dcfce7"
+              stroke="#0a0a0a"
+              stroke-width="2"
+            />
+            <rect x="16" y="152" width="5" height="38" fill="#22c55e" />
+            <text
+              x="32"
+              y="168"
+              font-size="11"
+              font-weight="700"
+              fill="#166534"
+            >
+              el.style.setProperty(prop, value)
+            </text>
+            <text x="32" y="182" font-size="10" fill="#374151">
+              Sets ONE property. Non-destructive. Leaves other inline styles
+              alone. Cooperates safely. ✓
+            </text>
+            <rect x="598" y="160" width="60" height="22" fill="#22c55e" />
+            <text
+              x="628"
+              y="176"
+              font-size="9"
+              font-weight="700"
+              fill="#fff"
+              text-anchor="middle"
+            >
+              CORRECT
+            </text>
+          </svg>
+          <p class="svg-caption">
+            setProperty() is additive - it never touches properties it didn't
+            set.
+          </p>
+        </div>
+
+        <p class="prose">
+          With the right API chosen, the parsing pipeline itself is
+          straightforward:
+        </p>
+
+        <div
+          class="svg-wrap"
+          role="img"
+          aria-label="Step-by-step execution trace of applyStyleString parsing a CSS declaration string"
+        >
+          <svg
+            viewBox="0 0 680 310"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+            style="font-family: &quot;Space Mono&quot;, monospace"
+          >
+            <text x="16" y="28" font-size="12" font-weight="700" fill="#0a0a0a">
+              applyStyleString() - execution trace
+            </text>
+
+            <rect x="16" y="40" width="648" height="38" fill="#0a0a0a" />
+            <text x="28" y="55" font-size="10" fill="#94a3b8" font-weight="700">
+              INPUT
+            </text>
+            <text x="28" y="70" font-size="12" fill="#60b5ff">
+              "padding-left: 16px; padding-right: 16px"
+            </text>
+
+            <rect
+              x="16"
+              y="90"
+              width="648"
+              height="56"
+              fill="#fff7ed"
+              stroke="#0a0a0a"
+              stroke-width="2"
+            />
+            <text
+              x="28"
+              y="108"
+              font-size="10"
+              font-weight="700"
+              fill="#9a3412"
+            >
+              STEP 1 - split(";") - split on semicolons
+            </text>
+            <rect
+              x="28"
+              y="116"
+              width="220"
+              height="22"
+              fill="#ff9149"
+              stroke="#0a0a0a"
+              stroke-width="1.5"
+            />
+            <text
+              x="38"
+              y="131"
+              font-size="10"
+              fill="#0a0a0a"
+              font-weight="700"
+            >
+              "padding-left: 16px"
+            </text>
+            <rect
+              x="264"
+              y="116"
+              width="236"
+              height="22"
+              fill="#ff9149"
+              stroke="#0a0a0a"
+              stroke-width="1.5"
+            />
+            <text
+              x="274"
+              y="131"
+              font-size="10"
+              fill="#0a0a0a"
+              font-weight="700"
+            >
+              " padding-right: 16px"
+            </text>
+            <text x="516" y="131" font-size="10" fill="#888">
+              (trimmed next)
+            </text>
+
+            <rect
+              x="16"
+              y="158"
+              width="648"
+              height="64"
+              fill="#eff6ff"
+              stroke="#0a0a0a"
+              stroke-width="2"
+            />
+            <text
+              x="28"
+              y="176"
+              font-size="10"
+              font-weight="700"
+              fill="#1e40af"
+            >
+              STEP 2 - indexOf(":") - find FIRST colon only (values can contain
+              colons)
+            </text>
+            <rect
+              x="28"
+              y="184"
+              width="290"
+              height="28"
+              fill="#dbeafe"
+              stroke="#0a0a0a"
+              stroke-width="1.5"
+            />
+            <text x="38" y="196" font-size="10" fill="#1e40af">
+              idx=11 → prop="padding-left"
+            </text>
+            <text x="38" y="208" font-size="10" fill="#1e40af">val="16px"</text>
+            <rect
+              x="332"
+              y="184"
+              width="316"
+              height="28"
+              fill="#dbeafe"
+              stroke="#0a0a0a"
+              stroke-width="1.5"
+            />
+            <text x="342" y="196" font-size="10" fill="#1e40af">
+              idx=14 → prop="padding-right"
+            </text>
+            <text x="342" y="208" font-size="10" fill="#1e40af">
+              val="16px"
+            </text>
+
+            <rect
+              x="16"
+              y="234"
+              width="648"
+              height="60"
+              fill="#f0fdf4"
+              stroke="#0a0a0a"
+              stroke-width="2"
+            />
+            <text
+              x="28"
+              y="252"
+              font-size="10"
+              font-weight="700"
+              fill="#166534"
+            >
+              STEP 3 - el.style.setProperty(prop, value) - write to CSSOM
+            </text>
+            <rect
+              x="28"
+              y="260"
+              width="290"
+              height="24"
+              fill="#86efac"
+              stroke="#0a0a0a"
+              stroke-width="1.5"
+            />
+            <text
+              x="38"
+              y="276"
+              font-size="10"
+              fill="#166534"
+              font-weight="700"
+            >
+              setProperty("padding-left", "16px") ✓
+            </text>
+            <rect
+              x="332"
+              y="260"
+              width="316"
+              height="24"
+              fill="#86efac"
+              stroke="#0a0a0a"
+              stroke-width="1.5"
+            />
+            <text
+              x="342"
+              y="276"
+              font-size="10"
+              fill="#166534"
+              font-weight="700"
+            >
+              setProperty("padding-right", "16px") ✓
+            </text>
+          </svg>
+          <p class="svg-caption">
+            indexOf(":") not split(":") - preserves colons inside values like
+            url(https://...)
+          </p>
+        </div>
+
+        <div class="callout">
+          <strong
+            >Why <code>indexOf(":")</code> instead of
+            <code>split(":")</code>?</strong
+          >
+          CSS values can contain colons -
+          <code>background-image: url(https://example.com/img.png)</code>.
+          Splitting on <code>":"</code> would shatter that value into three
+          pieces. Finding the <em>first</em> colon and using
+          <code>.slice()</code> gives us the property name on the left and the
+          complete value on the right, always intact.
+        </div>
+      </section>
+
+      <section
+        class="section"
+        id="process-element"
+        aria-labelledby="h-process-element"
+      >
+        <h2 class="section-title" id="h-process-element">
+          <span class="section-num">03</span>
+          processElement()
+        </h2>
+        <p class="prose">
+          The core function that takes a single DOM node and applies all
+          matching chai styles to it. Three early-exit guards run upfront - each
+          has a specific, non-obvious reason.
+        </p>
+
+        <div
+          class="svg-wrap"
+          role="img"
+          aria-label="Flowchart showing processElement function with three guards followed by classList iteration"
+        >
+          <svg
+            viewBox="0 0 680 560"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+            style="font-family: &quot;Space Mono&quot;, monospace"
+          >
+            <rect x="220" y="12" width="240" height="38" fill="#0a0a0a" />
+            <text
+              x="340"
+              y="36"
+              font-size="12"
+              font-weight="700"
+              fill="#fdfaf2"
+              text-anchor="middle"
+            >
+              processElement(el)
+            </text>
+
+            <line
+              x1="340"
+              y1="50"
+              x2="340"
+              y2="70"
+              stroke="#0a0a0a"
+              stroke-width="2"
+            />
+            <polygon points="334,66 346,66 340,76" fill="#0a0a0a" />
+
+            <rect
+              x="170"
+              y="76"
+              width="340"
+              height="46"
+              fill="#fef9c3"
+              stroke="#0a0a0a"
+              stroke-width="2.5"
+            />
+            <text
+              x="340"
+              y="96"
+              font-size="11"
+              font-weight="700"
+              fill="#713f12"
+              text-anchor="middle"
+            >
+              nodeType ≠ ELEMENT_NODE?
+            </text>
+            <text
+              x="340"
+              y="112"
+              font-size="10"
+              fill="#713f12"
+              text-anchor="middle"
+            >
+              text nodes, comments, fragments…
+            </text>
+
+            <line
+              x1="340"
+              y1="122"
+              x2="340"
+              y2="148"
+              stroke="#0a0a0a"
+              stroke-width="2"
+            />
+            <polygon points="334,144 346,144 340,154" fill="#0a0a0a" />
+            <text
+              x="348"
+              y="138"
+              font-size="10"
+              fill="#166534"
+              font-weight="700"
+            >
+              NO
+            </text>
+
+            <line
+              x1="510"
+              y1="99"
+              x2="556"
+              y2="99"
+              stroke="#0a0a0a"
+              stroke-width="2"
+            />
+            <rect
+              x="556"
+              y="83"
+              width="72"
+              height="32"
+              fill="#fecaca"
+              stroke="#0a0a0a"
+              stroke-width="2"
+            />
+            <text
+              x="592"
+              y="104"
+              font-size="11"
+              font-weight="700"
+              fill="#991b1b"
+              text-anchor="middle"
+            >
+              return
+            </text>
+            <text
+              x="516"
+              y="95"
+              font-size="10"
+              fill="#991b1b"
+              font-weight="700"
+            >
+              YES ▶
+            </text>
+
+            <rect
+              x="170"
+              y="154"
+              width="340"
+              height="46"
+              fill="#fef9c3"
+              stroke="#0a0a0a"
+              stroke-width="2.5"
+            />
+            <text
+              x="340"
+              y="174"
+              font-size="11"
+              font-weight="700"
+              fill="#713f12"
+              text-anchor="middle"
+            >
+              tagName in SKIP_TAGS?
+            </text>
+            <text
+              x="340"
+              y="190"
+              font-size="10"
+              fill="#713f12"
+              text-anchor="middle"
+            >
+              Set{"SCRIPT","STYLE","NOSCRIPT"}
+            </text>
+
+            <line
+              x1="340"
+              y1="200"
+              x2="340"
+              y2="226"
+              stroke="#0a0a0a"
+              stroke-width="2"
+            />
+            <polygon points="334,222 346,222 340,232" fill="#0a0a0a" />
+            <text
+              x="348"
+              y="216"
+              font-size="10"
+              fill="#166534"
+              font-weight="700"
+            >
+              NO
+            </text>
+
+            <line
+              x1="510"
+              y1="177"
+              x2="556"
+              y2="177"
+              stroke="#0a0a0a"
+              stroke-width="2"
+            />
+            <rect
+              x="556"
+              y="161"
+              width="72"
+              height="32"
+              fill="#fecaca"
+              stroke="#0a0a0a"
+              stroke-width="2"
+            />
+            <text
+              x="592"
+              y="182"
+              font-size="11"
+              font-weight="700"
+              fill="#991b1b"
+              text-anchor="middle"
+            >
+              return
+            </text>
+            <text
+              x="516"
+              y="173"
+              font-size="10"
+              fill="#991b1b"
+              font-weight="700"
+            >
+              YES ▶
+            </text>
+
+            <rect
+              x="170"
+              y="232"
+              width="340"
+              height="46"
+              fill="#fef9c3"
+              stroke="#0a0a0a"
+              stroke-width="2.5"
+            />
+            <text
+              x="340"
+              y="252"
+              font-size="11"
+              font-weight="700"
+              fill="#713f12"
+              text-anchor="middle"
+            >
+              classList empty?
+            </text>
+            <text
+              x="340"
+              y="268"
+              font-size="10"
+              fill="#713f12"
+              text-anchor="middle"
+            >
+              el.classList.length === 0
+            </text>
+
+            <line
+              x1="340"
+              y1="278"
+              x2="340"
+              y2="304"
+              stroke="#0a0a0a"
+              stroke-width="2"
+            />
+            <polygon points="334,300 346,300 340,310" fill="#0a0a0a" />
+            <text
+              x="348"
+              y="294"
+              font-size="10"
+              fill="#166534"
+              font-weight="700"
+            >
+              NO
+            </text>
+
+            <line
+              x1="510"
+              y1="255"
+              x2="556"
+              y2="255"
+              stroke="#0a0a0a"
+              stroke-width="2"
+            />
+            <rect
+              x="556"
+              y="239"
+              width="72"
+              height="32"
+              fill="#fecaca"
+              stroke="#0a0a0a"
+              stroke-width="2"
+            />
+            <text
+              x="592"
+              y="260"
+              font-size="11"
+              font-weight="700"
+              fill="#991b1b"
+              text-anchor="middle"
+            >
+              return
+            </text>
+            <text
+              x="516"
+              y="251"
+              font-size="10"
+              fill="#991b1b"
+              font-weight="700"
+            >
+              YES ▶
+            </text>
+
+            <rect
+              x="110"
+              y="310"
+              width="460"
+              height="50"
+              fill="#dbeafe"
+              stroke="#0a0a0a"
+              stroke-width="2.5"
+            />
+            <text
+              x="340"
+              y="330"
+              font-size="11"
+              font-weight="700"
+              fill="#1e40af"
+              text-anchor="middle"
+            >
+              el.classList.forEach(cls → ...)
+            </text>
+            <text
+              x="340"
+              y="350"
+              font-size="10"
+              fill="#1e40af"
+              text-anchor="middle"
+            >
+              DOMTokenList - already split, trimmed, deduped by the browser
+            </text>
+
+            <line
+              x1="340"
+              y1="360"
+              x2="340"
+              y2="388"
+              stroke="#0a0a0a"
+              stroke-width="2"
+            />
+            <polygon points="334,384 346,384 340,394" fill="#0a0a0a" />
+
+            <rect
+              x="170"
+              y="394"
+              width="340"
+              height="46"
+              fill="#fef9c3"
+              stroke="#0a0a0a"
+              stroke-width="2.5"
+            />
+            <text
+              x="340"
+              y="414"
+              font-size="11"
+              font-weight="700"
+              fill="#713f12"
+              text-anchor="middle"
+            >
+              customStyles[cls] exists?
+            </text>
+            <text
+              x="340"
+              y="430"
+              font-size="10"
+              fill="#713f12"
+              text-anchor="middle"
+            >
+              O(1) hash lookup
+            </text>
+
+            <line
+              x1="340"
+              y1="440"
+              x2="340"
+              y2="466"
+              stroke="#0a0a0a"
+              stroke-width="2"
+            />
+            <polygon points="334,462 346,462 340,472" fill="#0a0a0a" />
+            <text
+              x="348"
+              y="456"
+              font-size="10"
+              fill="#166534"
+              font-weight="700"
+            >
+              YES
+            </text>
+
+            <line
+              x1="170"
+              y1="417"
+              x2="124"
+              y2="417"
+              stroke="#0a0a0a"
+              stroke-width="2"
+            />
+            <text x="80" y="413" font-size="10" fill="#888">skip</text>
+            <text
+              x="128"
+              y="413"
+              font-size="10"
+              fill="#991b1b"
+              font-weight="700"
+            >
+              NO ◀
+            </text>
+
+            <rect
+              x="80"
+              y="472"
+              width="520"
+              height="52"
+              fill="#dcfce7"
+              stroke="#0a0a0a"
+              stroke-width="2.5"
+            />
+            <text
+              x="340"
+              y="492"
+              font-size="11"
+              font-weight="700"
+              fill="#166534"
+              text-anchor="middle"
+            >
+              applyStyleString(el, customStyles[cls])
+            </text>
+            <text
+              x="340"
+              y="514"
+              font-size="10"
+              fill="#166534"
+              text-anchor="middle"
+            >
+              el.setAttribute("data-chai-applied", matched.join(" "))
+            </text>
+
+            <text x="16" y="102" font-size="9" fill="#aaa">guard 1</text>
+            <text x="16" y="180" font-size="9" fill="#aaa">guard 2</text>
+            <text x="16" y="258" font-size="9" fill="#aaa">guard 3</text>
+          </svg>
+          <p class="svg-caption">
+            Three early-exit guards keep the main loop clean and safe.
+          </p>
+        </div>
+
+        <p class="prose">
+          The <code>nodeType</code> guard matters because the DOM tree contains
+          many non-element nodes. Accessing <code>.classList</code> on a text
+          node returns <code>undefined</code>, causing a silent crash.
+        </p>
+
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>nodeType</th>
+              <th>Represents</th>
+              <th>Passes guard?</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>1</code> - ELEMENT_NODE</td>
+              <td>&lt;div&gt;, &lt;p&gt;, &lt;span&gt;, etc.</td>
+              <td><span class="badge badge-green">YES</span></td>
+            </tr>
+            <tr>
+              <td><code>3</code> - TEXT_NODE</td>
+              <td>Text content between tags</td>
+              <td><span class="badge badge-red">NO</span></td>
+            </tr>
+            <tr>
+              <td><code>8</code> - COMMENT_NODE</td>
+              <td>HTML comments &lt;!-- ... --&gt;</td>
+              <td><span class="badge badge-red">NO</span></td>
+            </tr>
+            <tr>
+              <td><code>9</code> - DOCUMENT_NODE</td>
+              <td>The document itself</td>
+              <td><span class="badge badge-red">NO</span></td>
+            </tr>
+            <tr>
+              <td><code>11</code> - DOCUMENT_FRAGMENT</td>
+              <td>DocumentFragment</td>
+              <td><span class="badge badge-red">NO</span></td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="callout">
+          <strong>classList vs className</strong> - We use
+          <code>el.classList.forEach()</code> rather than parsing
+          <code>el.className.split(" ")</code> manually. The
+          <code>classList</code> API (<code>DOMTokenList</code>) handles
+          multiple spaces, leading/trailing whitespace, and empty strings
+          automatically. Less code, fewer edge cases.
+        </div>
+        <div class="callout orange">
+          <strong>data-chai-applied</strong> is a debugging stamp. Inspect any
+          styled element in DevTools - you'll see
+          <code>data-chai-applied="chai-p-2 chai-flex ..."</code>. It's also a
+          test-assertion hook:
+          <code>expect(el.dataset.chaiApplied).toContain("chai-p-4")</code>.
+        </div>
+      </section>
+
+      <section class="section" id="scan-dom" aria-labelledby="h-scan-dom">
+        <h2 class="section-title" id="h-scan-dom">
+          <span class="section-num">04</span>
+          scanDOM()
+        </h2>
+        <p class="prose">
+          The initial full-DOM pass. Uses a targeted CSS attribute selector so
+          the browser's native selector engine - written in C++ - does the heavy
+          filtering before a single line of JavaScript runs.
+        </p>
+
+        <div class="code-block" aria-label="scanDOM function source code">
+          <span style="color: #fde68a">function</span> scanDOM(root =
+          document.body) {
+          <span style="color: #888"
+            >// [class*="chai-"] lets the native selector engine
+            pre-filter</span
+          >
+          <span style="color: #fde68a">const</span> elements =
+          root.querySelectorAll(<span style="color: #86efac"
+            >'[class*="chai-"]'</span
+          >); elements.<span style="color: #60b5ff">forEach</span
+          >(processElement); processElement(root);
+          <span style="color: #888">// root itself is NOT in the NodeList</span>
+          }
+        </div>
+
+        <div
+          class="svg-wrap"
+          role="img"
+          aria-label="Diagram comparing CSS attribute selector operators: exact match, contains, and word token"
+        >
+          <svg
+            viewBox="0 0 680 230"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+            style="font-family: &quot;Space Mono&quot;, monospace"
+          >
+            <text x="16" y="28" font-size="12" font-weight="700" fill="#0a0a0a">
+              CSS attribute selector operators - which one to use where
+            </text>
+
+            <rect x="16" y="40" width="130" height="30" fill="#0a0a0a" />
+            <rect x="150" y="40" width="220" height="30" fill="#0a0a0a" />
+            <rect x="374" y="40" width="290" height="30" fill="#0a0a0a" />
+            <text
+              x="81"
+              y="60"
+              font-size="9"
+              font-weight="700"
+              fill="#fdfaf2"
+              text-anchor="middle"
+              letter-spacing="0.5"
+            >
+              OPERATOR
+            </text>
+            <text
+              x="260"
+              y="60"
+              font-size="9"
+              font-weight="700"
+              fill="#fdfaf2"
+              text-anchor="middle"
+              letter-spacing="0.5"
+            >
+              MEANING
+            </text>
+            <text
+              x="519"
+              y="60"
+              font-size="9"
+              font-weight="700"
+              fill="#fdfaf2"
+              text-anchor="middle"
+              letter-spacing="0.5"
+            >
+              USED IN CHAI-WIND
+            </text>
+
+            <rect
+              x="16"
+              y="70"
+              width="130"
+              height="48"
+              fill="#fee2e2"
+              stroke="#0a0a0a"
+              stroke-width="1.5"
+            />
+            <rect
+              x="150"
+              y="70"
+              width="220"
+              height="48"
+              fill="#fff5f5"
+              stroke="#0a0a0a"
+              stroke-width="1.5"
+            />
+            <rect
+              x="374"
+              y="70"
+              width="290"
+              height="48"
+              fill="#fff5f5"
+              stroke="#0a0a0a"
+              stroke-width="1.5"
+            />
+            <text
+              x="81"
+              y="90"
+              font-size="13"
+              font-weight="700"
+              fill="#991b1b"
+              text-anchor="middle"
+            >
+              [attr="val"]
+            </text>
+            <text
+              x="81"
+              y="108"
+              font-size="9"
+              fill="#991b1b"
+              text-anchor="middle"
+            >
+              exact match
+            </text>
+            <text x="162" y="90" font-size="10" fill="#374151">
+              Entire attribute must
+            </text>
+            <text x="162" y="106" font-size="10" fill="#374151">
+              equal exactly "val"
+            </text>
+            <text x="384" y="90" font-size="10" fill="#991b1b">
+              ✗ Never - class attribute is never just
+            </text>
+            <text x="384" y="106" font-size="10" fill="#991b1b">
+              "chai-" and nothing else
+            </text>
+
+            <rect
+              x="16"
+              y="118"
+              width="130"
+              height="48"
+              fill="#dcfce7"
+              stroke="#0a0a0a"
+              stroke-width="1.5"
+            />
+            <rect
+              x="150"
+              y="118"
+              width="220"
+              height="48"
+              fill="#f0fdf4"
+              stroke="#0a0a0a"
+              stroke-width="1.5"
+            />
+            <rect
+              x="374"
+              y="118"
+              width="290"
+              height="48"
+              fill="#f0fdf4"
+              stroke="#0a0a0a"
+              stroke-width="1.5"
+            />
+            <text
+              x="81"
+              y="138"
+              font-size="13"
+              font-weight="700"
+              fill="#166534"
+              text-anchor="middle"
+            >
+              [attr*="val"]
+            </text>
+            <text
+              x="81"
+              y="156"
+              font-size="9"
+              fill="#166534"
+              text-anchor="middle"
+            >
+              contains
+            </text>
+            <text x="162" y="138" font-size="10" fill="#374151">
+              Attribute string
+            </text>
+            <text x="162" y="154" font-size="10" fill="#374151">
+              contains "val" anywhere
+            </text>
+            <text
+              x="384"
+              y="138"
+              font-size="10"
+              fill="#166534"
+              font-weight="700"
+            >
+              ✓ scanDOM() - finds any element with
+            </text>
+            <text x="384" y="154" font-size="10" fill="#166534">
+              at least one chai- class token
+            </text>
+
+            <rect
+              x="16"
+              y="166"
+              width="130"
+              height="48"
+              fill="#dbeafe"
+              stroke="#0a0a0a"
+              stroke-width="1.5"
+            />
+            <rect
+              x="150"
+              y="166"
+              width="220"
+              height="48"
+              fill="#eff6ff"
+              stroke="#0a0a0a"
+              stroke-width="1.5"
+            />
+            <rect
+              x="374"
+              y="166"
+              width="290"
+              height="48"
+              fill="#eff6ff"
+              stroke="#0a0a0a"
+              stroke-width="1.5"
+            />
+            <text
+              x="81"
+              y="186"
+              font-size="13"
+              font-weight="700"
+              fill="#1e40af"
+              text-anchor="middle"
+            >
+              [attr~="val"]
+            </text>
+            <text
+              x="81"
+              y="204"
+              font-size="9"
+              fill="#1e40af"
+              text-anchor="middle"
+            >
+              word token
+            </text>
+            <text x="162" y="186" font-size="10" fill="#374151">
+              "val" is a whitespace-
+            </text>
+            <text x="162" y="202" font-size="10" fill="#374151">
+              delimited token in attr
+            </text>
+            <text
+              x="384"
+              y="186"
+              font-size="10"
+              fill="#1e40af"
+              font-weight="700"
+            >
+              ✓ register() - finds elements that have
+            </text>
+            <text x="384" y="202" font-size="10" fill="#1e40af">
+              that exact class (not substrings)
+            </text>
+          </svg>
+          <p class="svg-caption">
+            [class*="chai-"] for broad scanning vs [class~="cls"] for exact
+            token matching in register()
+          </p>
+        </div>
+
+        <div class="callout">
+          <strong>querySelectorAll returns descendants only.</strong> The
+          <code>root</code> element itself is never included in the
+          <code>NodeList</code>. Without the explicit
+          <code>processElement(root)</code> call, any element passed as
+          <code>root</code> - like a freshly inserted component wrapper - would
+          be silently skipped.
+        </div>
+      </section>
+
+      <section
+        class="section"
+        id="mutation-observer"
+        aria-labelledby="h-mutation"
+      >
+        <h2 class="section-title" id="h-mutation">
+          <span class="section-num">05</span>
+          MutationObserver
+        </h2>
+        <p class="prose">
+          <code>scanDOM()</code> runs once at initialisation. But real
+          applications constantly mutate the DOM - React renders, Vue updates
+          templates, plain JS inserts elements on user interaction. Any element
+          added after the scan would miss the styling pass entirely. The
+          <strong>MutationObserver API</strong> solves this.
+        </p>
+
+        <div
+          class="svg-wrap"
+          role="img"
+          aria-label="Diagram showing MutationObserver lifecycle from observe call through DOM change to processElement being called"
+        >
+          <svg
+            viewBox="0 0 680 336"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+            style="font-family: &quot;Space Mono&quot;, monospace"
+          >
+            <text x="16" y="28" font-size="12" font-weight="700" fill="#0a0a0a">
+              MutationObserver - lifecycle
+            </text>
+
+            <rect x="16" y="44" width="200" height="48" fill="#0a0a0a" />
+            <text
+              x="116"
+              y="64"
+              font-size="11"
+              font-weight="700"
+              fill="#fdfaf2"
+              text-anchor="middle"
+            >
+              Your code
+            </text>
+            <text
+              x="116"
+              y="82"
+              font-size="10"
+              fill="#94a3b8"
+              text-anchor="middle"
+            >
+              observer.observe(body, opts)
+            </text>
+
+            <line
+              x1="216"
+              y1="68"
+              x2="268"
+              y2="68"
+              stroke="#0a0a0a"
+              stroke-width="2"
+            />
+            <polygon points="264,62 276,68 264,74" fill="#0a0a0a" />
+            <text x="224" y="62" font-size="9" fill="#888">registers</text>
+
+            <rect
+              x="276"
+              y="44"
+              width="200"
+              height="48"
+              fill="#ff9149"
+              stroke="#0a0a0a"
+              stroke-width="2.5"
+            />
+            <text
+              x="376"
+              y="64"
+              font-size="11"
+              font-weight="700"
+              fill="#0a0a0a"
+              text-anchor="middle"
+            >
+              MutationObserver
+            </text>
+            <text
+              x="376"
+              y="82"
+              font-size="10"
+              fill="#0a0a0a"
+              text-anchor="middle"
+            >
+              watching document.body
+            </text>
+
+            <line
+              x1="376"
+              y1="92"
+              x2="376"
+              y2="130"
+              stroke="#0a0a0a"
+              stroke-width="2"
+              stroke-dasharray="5,4"
+            />
+            <polygon points="370,126 382,126 376,136" fill="#0a0a0a" />
+            <text x="384" y="118" font-size="9" fill="#888">DOM changes</text>
+
+            <rect
+              x="176"
+              y="136"
+              width="400"
+              height="48"
+              fill="#dbeafe"
+              stroke="#0a0a0a"
+              stroke-width="2.5"
+            />
+            <text
+              x="376"
+              y="156"
+              font-size="11"
+              font-weight="700"
+              fill="#1e40af"
+              text-anchor="middle"
+            >
+              MutationRecord queued
+            </text>
+            <text
+              x="376"
+              y="174"
+              font-size="10"
+              fill="#1e40af"
+              text-anchor="middle"
+            >
+              type: "childList" | "attributes" • addedNodes | target
+            </text>
+
+            <line
+              x1="376"
+              y1="184"
+              x2="376"
+              y2="212"
+              stroke="#0a0a0a"
+              stroke-width="2"
+            />
+            <polygon points="370,208 382,208 376,218" fill="#0a0a0a" />
+
+            <rect
+              x="176"
+              y="218"
+              width="400"
+              height="48"
+              fill="#fef9c3"
+              stroke="#0a0a0a"
+              stroke-width="2.5"
+            />
+            <text
+              x="376"
+              y="238"
+              font-size="11"
+              font-weight="700"
+              fill="#713f12"
+              text-anchor="middle"
+            >
+              callback(mutations[]) called
+            </text>
+            <text
+              x="376"
+              y="256"
+              font-size="10"
+              fill="#713f12"
+              text-anchor="middle"
+            >
+              iterates records → collects nodes into _pendingNodes Set
+            </text>
+
+            <line
+              x1="376"
+              y1="266"
+              x2="376"
+              y2="294"
+              stroke="#0a0a0a"
+              stroke-width="2"
+            />
+            <polygon points="370,290 382,290 376,300" fill="#0a0a0a" />
+
+            <rect
+              x="136"
+              y="300"
+              width="480"
+              height="20"
+              fill="#22c55e"
+              stroke="#0a0a0a"
+              stroke-width="2"
+            />
+            <text
+              x="376"
+              y="312"
+              font-size="9"
+              fill="#166534"
+              font-weight="700"
+              text-anchor="middle"
+            >
+              next rAF frame → _flushPending() → processElement() on each queued
+              node
+            </text>
+          </svg>
+          <p class="svg-caption">
+            The observer accumulates records; a single rAF frame drains them all
+            at once.
+          </p>
+        </div>
+
+        <p class="prose">
+          The observer is configured with four options, each chosen
+          deliberately:
+        </p>
+
+        <div
+          class="code-block"
+          aria-label="MutationObserver.observe call with options"
+        >
+          <pre
+            style="margin: 0; white-space: pre"
+          >observer.observe(document.body, {
+  childList:      <span style="color: #86efac">true</span>,  <span style="color: #888">// watch nodes added/removed</span>
+  subtree:        <span style="color: #86efac">true</span>,  <span style="color: #888">// entire tree, not just direct children</span>
+  attributes:     <span style="color: #86efac">true</span>,  <span style="color: #888">// watch attribute changes</span>
+  attributeFilter: <span style="color: #60b5ff">["class"]</span>, <span style="color: #888">// only class changes - ignore id, style, data-*</span>
+});</pre>
+        </div>
+
+        <div class="callout">
+          <strong>subtree: true is critical.</strong> Without it, only direct
+          children of <code>document.body</code> would be watched. Any element
+          inside a nested component - which is the normal case - would be
+          invisible to the observer.
+        </div>
+        <div class="callout orange">
+          <strong>attributeFilter: ["class"]</strong> is a performance guard.
+          Without it, every <code>style</code>, <code>id</code>,
+          <code>data-*</code>, or <code>aria-*</code> mutation would fire the
+          callback. We only care about class changes, so we filter down to one
+          attribute name.
+        </div>
+
+        <p class="prose" style="margin-top: 8px">
+          The callback handles two mutation types:
+        </p>
+
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>mutation.type</th>
+              <th>Trigger</th>
+              <th>What we collect</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>"childList"</code></td>
+              <td>
+                Nodes added/removed (e.g.
+                <code>appendChild</code>, <code>innerHTML =</code>)
+              </td>
+              <td>
+                Each node in <code>mutation.addedNodes</code> that is an
+                ELEMENT_NODE
+              </td>
+            </tr>
+            <tr>
+              <td><code>"attributes"</code></td>
+              <td>
+                Class attribute changed (e.g.
+                <code>el.classList.add("chai-p-4")</code>)
+              </td>
+              <td><code>mutation.target</code> - the element itself</td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section class="section" id="raf-batching" aria-labelledby="h-raf">
+        <h2 class="section-title" id="h-raf">
+          <span class="section-num">06</span>
+          RAF Batching
+        </h2>
+        <p class="prose">
+          The observer callback doesn't process nodes immediately. Instead it
+          collects them in a <code>Set</code> and schedules a single
+          <code>requestAnimationFrame</code> flush. This is the
+          <strong>batch-and-drain</strong> pattern.
+        </p>
+
+        <div
+          class="svg-wrap"
+          role="img"
+          aria-label="Comparison showing that without RAF batching each node triggers a separate processElement call, while with RAF batching all nodes are collected then processed in one frame"
+        >
+          <svg
+            viewBox="0 0 680 280"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+            style="font-family: &quot;Space Mono&quot;, monospace"
+          >
+            <text x="16" y="24" font-size="11" font-weight="700" fill="#991b1b">
+              WITHOUT batching
+            </text>
+            <rect
+              x="16"
+              y="32"
+              width="298"
+              height="236"
+              fill="#fee2e2"
+              stroke="#0a0a0a"
+              stroke-width="2"
+            />
+
+            <rect
+              x="28"
+              y="44"
+              width="120"
+              height="22"
+              fill="#fecaca"
+              stroke="#0a0a0a"
+              stroke-width="1.5"
+            />
+            <text x="38" y="59" font-size="10" fill="#991b1b">
+              insert node 1
+            </text>
+            <line
+              x1="88"
+              y1="66"
+              x2="88"
+              y2="78"
+              stroke="#991b1b"
+              stroke-width="1.5"
+              stroke-dasharray="3,3"
+            />
+            <rect
+              x="28"
+              y="78"
+              width="120"
+              height="22"
+              fill="#fff"
+              stroke="#0a0a0a"
+              stroke-width="1.5"
+            />
+            <text x="38" y="93" font-size="10" fill="#374151">
+              processElement() ←
+            </text>
+
+            <rect
+              x="28"
+              y="108"
+              width="120"
+              height="22"
+              fill="#fecaca"
+              stroke="#0a0a0a"
+              stroke-width="1.5"
+            />
+            <text x="38" y="123" font-size="10" fill="#991b1b">
+              insert node 2
+            </text>
+            <line
+              x1="88"
+              y1="130"
+              x2="88"
+              y2="142"
+              stroke="#991b1b"
+              stroke-width="1.5"
+              stroke-dasharray="3,3"
+            />
+            <rect
+              x="28"
+              y="142"
+              width="120"
+              height="22"
+              fill="#fff"
+              stroke="#0a0a0a"
+              stroke-width="1.5"
+            />
+            <text x="38" y="157" font-size="10" fill="#374151">
+              processElement() ←
+            </text>
+
+            <rect
+              x="28"
+              y="172"
+              width="120"
+              height="22"
+              fill="#fecaca"
+              stroke="#0a0a0a"
+              stroke-width="1.5"
+            />
+            <text x="38" y="187" font-size="10" fill="#991b1b">
+              insert node 3
+            </text>
+            <line
+              x1="88"
+              y1="194"
+              x2="88"
+              y2="206"
+              stroke="#991b1b"
+              stroke-width="1.5"
+              stroke-dasharray="3,3"
+            />
+            <rect
+              x="28"
+              y="206"
+              width="120"
+              height="22"
+              fill="#fff"
+              stroke="#0a0a0a"
+              stroke-width="1.5"
+            />
+            <text x="38" y="221" font-size="10" fill="#374151">
+              processElement() ←
+            </text>
+
+            <text
+              x="28"
+              y="252"
+              font-size="10"
+              fill="#991b1b"
+              font-weight="700"
+            >
+              N callbacks for N nodes
+            </text>
+            <text x="28" y="264" font-size="10" fill="#991b1b">
+              Can cause layout thrash
+            </text>
+
+            <text
+              x="366"
+              y="24"
+              font-size="11"
+              font-weight="700"
+              fill="#166534"
+            >
+              WITH batching (chai-wind)
+            </text>
+            <rect
+              x="366"
+              y="32"
+              width="298"
+              height="236"
+              fill="#dcfce7"
+              stroke="#0a0a0a"
+              stroke-width="2"
+            />
+
+            <rect
+              x="378"
+              y="44"
+              width="120"
+              height="22"
+              fill="#86efac"
+              stroke="#0a0a0a"
+              stroke-width="1.5"
+            />
+            <text x="388" y="59" font-size="10" fill="#166534">
+              insert node 1
+            </text>
+            <line
+              x1="512"
+              y1="55"
+              x2="556"
+              y2="55"
+              stroke="#166534"
+              stroke-width="1.5"
+            />
+            <rect
+              x="556"
+              y="44"
+              width="96"
+              height="22"
+              fill="#bbf7d0"
+              stroke="#0a0a0a"
+              stroke-width="1.5"
+            />
+            <text x="566" y="59" font-size="10" fill="#166534">Set.add()</text>
+
+            <rect
+              x="378"
+              y="78"
+              width="120"
+              height="22"
+              fill="#86efac"
+              stroke="#0a0a0a"
+              stroke-width="1.5"
+            />
+            <text x="388" y="93" font-size="10" fill="#166534">
+              insert node 2
+            </text>
+            <line
+              x1="512"
+              y1="89"
+              x2="556"
+              y2="89"
+              stroke="#166534"
+              stroke-width="1.5"
+            />
+            <rect
+              x="556"
+              y="78"
+              width="96"
+              height="22"
+              fill="#bbf7d0"
+              stroke="#0a0a0a"
+              stroke-width="1.5"
+            />
+            <text x="566" y="93" font-size="10" fill="#166534">Set.add()</text>
+
+            <rect
+              x="378"
+              y="112"
+              width="120"
+              height="22"
+              fill="#86efac"
+              stroke="#0a0a0a"
+              stroke-width="1.5"
+            />
+            <text x="388" y="127" font-size="10" fill="#166534">
+              insert node 3
+            </text>
+            <line
+              x1="512"
+              y1="123"
+              x2="556"
+              y2="123"
+              stroke="#166534"
+              stroke-width="1.5"
+            />
+            <rect
+              x="556"
+              y="112"
+              width="96"
+              height="22"
+              fill="#bbf7d0"
+              stroke="#0a0a0a"
+              stroke-width="1.5"
+            />
+            <text x="566" y="127" font-size="10" fill="#166534">Set.add()</text>
+
+            <text
+              x="378"
+              y="162"
+              font-size="10"
+              fill="#166534"
+              font-weight="700"
+            >
+              schedule rAF (once)
+            </text>
+            <line
+              x1="450"
+              y1="168"
+              x2="450"
+              y2="188"
+              stroke="#0a0a0a"
+              stroke-width="2"
+            />
+            <polygon points="444,184 456,184 450,194" fill="#0a0a0a" />
+
+            <rect x="378" y="194" width="274" height="36" fill="#0a0a0a" />
+            <text
+              x="515"
+              y="209"
+              font-size="10"
+              font-weight="700"
+              fill="#86efac"
+              text-anchor="middle"
+            >
+              next frame: _flushPending()
+            </text>
+            <text
+              x="515"
+              y="223"
+              font-size="10"
+              fill="#60b5ff"
+              text-anchor="middle"
+            >
+              processElement() × 3 in one pass
+            </text>
+
+            <text
+              x="378"
+              y="252"
+              font-size="10"
+              fill="#166534"
+              font-weight="700"
+            >
+              1 flush for N nodes
+            </text>
+            <text x="378" y="264" font-size="10" fill="#166534">
+              Set deduplicates repeats automatically
+            </text>
+          </svg>
+          <p class="svg-caption">
+            If the same node appears in multiple mutation records within one
+            frame, the Set deduplicates it at zero cost.
+          </p>
+        </div>
+
+        <div class="code-block" aria-label="RAF batching implementation">
+          <pre
+            style="margin: 0; white-space: pre"
+          ><span style="color: #fde68a">let</span> _pendingNodes = <span style="color: #fde68a">new</span> Set();
+<span style="color: #fde68a">let</span> _rafId = <span style="color: #86efac">null</span>;
+
+<span style="color: #fde68a">function</span> _flushPending() {
+  _pendingNodes.<span style="color: #60b5ff">forEach</span>((node) => {
+    processElement(node);
+    node.querySelectorAll?.(<span style="color: #86efac">'[class*="chai-"]'</span>).<span style="color: #60b5ff">forEach</span>(processElement);
+  });
+  _pendingNodes.<span style="color: #60b5ff">clear</span>();
+  _rafId = <span style="color: #86efac">null</span>;
+}
+
+<span style="color: #888">// In the observer callback:</span>
+<span style="color: #fde68a">if</span> (!_rafId) {
+  _rafId = requestAnimationFrame(_flushPending); <span style="color: #888">// schedule once</span>
+}</pre>
+        </div>
+
+        <div class="callout">
+          <strong>The <code>_rafId</code> guard</strong> ensures only one frame
+          is ever pending at a time. Mutations keep arriving and accumulating in
+          <code>_pendingNodes</code>, but no second
+          <code>requestAnimationFrame</code> is scheduled until the current one
+          fires and clears <code>_rafId</code> back to <code>null</code>.
+        </div>
+      </section>
+
+      <section class="section" id="init" aria-labelledby="h-init">
+        <h2 class="section-title" id="h-init">
+          <span class="section-num">07</span>
+          Init &amp; readyState
+        </h2>
+        <p class="prose">
+          When chai-wind's script executes, the HTML parser may still be running
+          - meaning <code>document.body</code> doesn't yet contain all its
+          elements. The initialisation block checks
+          <code>document.readyState</code> to decide whether to run immediately
+          or wait.
+        </p>
+
+        <div
+          class="svg-wrap"
+          role="img"
+          aria-label="Timeline diagram of document.readyState values: loading, interactive, complete, and when chai-wind inits"
+        >
+          <svg
+            viewBox="0 0 680 220"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+            style="font-family: &quot;Space Mono&quot;, monospace"
+          >
+            <text x="16" y="28" font-size="12" font-weight="700" fill="#0a0a0a">
+              document.readyState - three states
+            </text>
+
+            <rect x="40" y="60" width="600" height="8" fill="#0a0a0a" />
+            <polygon points="636,56 648,64 636,72" fill="#0a0a0a" />
+
+            <line
+              x1="40"
+              y1="56"
+              x2="40"
+              y2="72"
+              stroke="#0a0a0a"
+              stroke-width="2.5"
+            />
+            <rect
+              x="16"
+              y="76"
+              width="148"
+              height="46"
+              fill="#fee2e2"
+              stroke="#0a0a0a"
+              stroke-width="2"
+            />
+            <text
+              x="90"
+              y="96"
+              font-size="11"
+              font-weight="700"
+              fill="#991b1b"
+              text-anchor="middle"
+            >
+              "loading"
+            </text>
+            <text
+              x="90"
+              y="112"
+              font-size="9"
+              fill="#991b1b"
+              text-anchor="middle"
+            >
+              HTML parser running
+            </text>
+
+            <line
+              x1="240"
+              y1="56"
+              x2="240"
+              y2="72"
+              stroke="#0a0a0a"
+              stroke-width="2.5"
+            />
+            <rect
+              x="168"
+              y="76"
+              width="160"
+              height="62"
+              fill="#fef9c3"
+              stroke="#0a0a0a"
+              stroke-width="2"
+            />
+            <text
+              x="248"
+              y="96"
+              font-size="11"
+              font-weight="700"
+              fill="#713f12"
+              text-anchor="middle"
+            >
+              "interactive"
+            </text>
+            <text
+              x="248"
+              y="110"
+              font-size="9"
+              fill="#713f12"
+              text-anchor="middle"
+            >
+              HTML parsed, DOM ready
+            </text>
+            <text
+              x="248"
+              y="126"
+              font-size="9"
+              fill="#713f12"
+              text-anchor="middle"
+            >
+              DOMContentLoaded fires ▼
+            </text>
+
+            <line
+              x1="480"
+              y1="56"
+              x2="480"
+              y2="72"
+              stroke="#0a0a0a"
+              stroke-width="2.5"
+            />
+            <rect
+              x="420"
+              y="76"
+              width="156"
+              height="62"
+              fill="#dcfce7"
+              stroke="#0a0a0a"
+              stroke-width="2"
+            />
+            <text
+              x="498"
+              y="96"
+              font-size="11"
+              font-weight="700"
+              fill="#166534"
+              text-anchor="middle"
+            >
+              "complete"
+            </text>
+            <text
+              x="498"
+              y="110"
+              font-size="9"
+              fill="#166534"
+              text-anchor="middle"
+            >
+              All resources loaded
+            </text>
+            <text
+              x="498"
+              y="126"
+              font-size="9"
+              fill="#166534"
+              text-anchor="middle"
+            >
+              window load fires ▼
+            </text>
+
+            <rect x="16" y="162" width="648" height="52" fill="#0a0a0a" />
+            <text
+              x="28"
+              y="176"
+              font-size="10"
+              font-weight="700"
+              fill="#ff9149"
+            >
+              chai-wind decision:
+            </text>
+            <text x="28" y="194" font-size="10" fill="#fdfaf2">
+              if readyState === "loading" → addEventListener("DOMContentLoaded",
+              init)
+            </text>
+            <text x="28" y="207" font-size="10" fill="#60b5ff">
+              else (already "interactive" or "complete") → init() right now
+            </text>
+          </svg>
+          <p class="svg-caption">
+            Scripts at the bottom of &lt;body&gt; see "interactive". Scripts in
+            &lt;head&gt; without defer see "loading". Both cases handled.
+          </p>
+        </div>
+
+        <div class="code-block" aria-label="Auto-init timing code">
+          <pre
+            style="margin: 0; white-space: pre"
+          ><span style="color: #fde68a">if</span> (document.readyState === <span style="color: #86efac">"loading"</span>) {
+  <span style="color: #888">// Parser still running - wait for it to finish</span>
+  document.addEventListener(<span style="color: #86efac">"DOMContentLoaded"</span>, () => {
+    ChaiWind.init({ debug: <span style="color: #86efac">true</span> });
+  });
+} <span style="color: #fde68a">else</span> {
+  <span style="color: #888">// DOM is already available - init immediately</span>
+  ChaiWind.init({ debug: <span style="color: #86efac">true</span> });
+}</pre>
+        </div>
+
+        <div class="callout">
+          This makes chai-wind safe to drop in
+          <em>anywhere</em> - <code>&lt;head&gt;</code> without defer, end of
+          <code>&lt;body&gt;</code>, or as a module. The
+          <code>readyState</code> check removes any placement constraint.
+        </div>
+      </section>
+
+      <section class="section" id="data-flow" aria-labelledby="h-data-flow">
+        <h2 class="section-title" id="h-data-flow">
+          <span class="section-num">08</span>
+          Full Data Flow
+        </h2>
+        <p class="prose">
+          Every layer in one picture - from the HTML file loading to a styled
+          element on screen.
+        </p>
+
+        <div
+          class="svg-wrap"
+          role="img"
+          aria-label="End-to-end data flow diagram of chai-wind from page load through DOM scan to styled output"
+        >
+          <svg
+            viewBox="0 0 680 620"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+            style="font-family: &quot;Space Mono&quot;, monospace"
+          >
+            <text x="16" y="28" font-size="12" font-weight="700" fill="#0a0a0a">
+              chai-wind - end-to-end data flow
+            </text>
+
+            <rect x="16" y="40" width="640" height="40" fill="#0a0a0a" />
+            <text
+              x="336"
+              y="65"
+              font-size="12"
+              font-weight="700"
+              fill="#fdfaf2"
+              text-anchor="middle"
+            >
+              HTML file loads → browser parses DOM
+            </text>
+
+            <line
+              x1="336"
+              y1="80"
+              x2="336"
+              y2="100"
+              stroke="#0a0a0a"
+              stroke-width="2"
+            />
+            <polygon points="330,96 342,96 336,106" fill="#0a0a0a" />
+
+            <rect
+              x="16"
+              y="106"
+              width="640"
+              height="40"
+              fill="#ff9149"
+              stroke="#0a0a0a"
+              stroke-width="2.5"
+            />
+            <text
+              x="336"
+              y="131"
+              font-size="11"
+              font-weight="700"
+              fill="#0a0a0a"
+              text-anchor="middle"
+            >
+              chai-wind.js executes → checks readyState → init()
+            </text>
+
+            <line
+              x1="336"
+              y1="146"
+              x2="336"
+              y2="166"
+              stroke="#0a0a0a"
+              stroke-width="2"
+            />
+            <polygon points="330,162 342,162 336,172" fill="#0a0a0a" />
+
+            <rect
+              x="16"
+              y="172"
+              width="640"
+              height="40"
+              fill="#dbeafe"
+              stroke="#0a0a0a"
+              stroke-width="2.5"
+            />
+            <text
+              x="336"
+              y="197"
+              font-size="11"
+              font-weight="700"
+              fill="#1e40af"
+              text-anchor="middle"
+            >
+              scanDOM() - querySelectorAll('[class*="chai-"]')
+            </text>
+
+            <line
+              x1="336"
+              y1="212"
+              x2="336"
+              y2="232"
+              stroke="#0a0a0a"
+              stroke-width="2"
+            />
+            <polygon points="330,228 342,228 336,238" fill="#0a0a0a" />
+
+            <rect
+              x="16"
+              y="238"
+              width="640"
+              height="56"
+              fill="#f0fdf4"
+              stroke="#0a0a0a"
+              stroke-width="2.5"
+            />
+            <text
+              x="336"
+              y="258"
+              font-size="11"
+              font-weight="700"
+              fill="#166534"
+              text-anchor="middle"
+            >
+              for each element → processElement(el)
+            </text>
+            <text x="80" y="278" font-size="10" fill="#166534">guards →</text>
+            <rect
+              x="128"
+              y="268"
+              width="110"
+              height="22"
+              fill="#86efac"
+              stroke="#0a0a0a"
+              stroke-width="1.5"
+            />
+            <text
+              x="183"
+              y="283"
+              font-size="9"
+              fill="#166534"
+              text-anchor="middle"
+            >
+              classList.forEach
+            </text>
+            <text x="246" y="278" font-size="10" fill="#166534">→</text>
+            <rect
+              x="258"
+              y="268"
+              width="110"
+              height="22"
+              fill="#86efac"
+              stroke="#0a0a0a"
+              stroke-width="1.5"
+            />
+            <text
+              x="313"
+              y="283"
+              font-size="9"
+              fill="#166534"
+              text-anchor="middle"
+            >
+              lookup in map
+            </text>
+            <text x="376" y="278" font-size="10" fill="#166534">→</text>
+            <rect
+              x="388"
+              y="268"
+              width="136"
+              height="22"
+              fill="#86efac"
+              stroke="#0a0a0a"
+              stroke-width="1.5"
+            />
+            <text
+              x="456"
+              y="283"
+              font-size="9"
+              fill="#166534"
+              text-anchor="middle"
+            >
+              applyStyleString()
+            </text>
+            <text x="532" y="278" font-size="10" fill="#166534">→</text>
+            <rect
+              x="548"
+              y="268"
+              width="96"
+              height="22"
+              fill="#86efac"
+              stroke="#0a0a0a"
+              stroke-width="1.5"
+            />
+            <text
+              x="596"
+              y="283"
+              font-size="9"
+              fill="#166534"
+              text-anchor="middle"
+            >
+              setProperty()
+            </text>
+
+            <line
+              x1="336"
+              y1="294"
+              x2="336"
+              y2="314"
+              stroke="#0a0a0a"
+              stroke-width="2"
+            />
+            <polygon points="330,310 342,310 336,320" fill="#0a0a0a" />
+
+            <rect
+              x="16"
+              y="320"
+              width="640"
+              height="40"
+              fill="#ff9149"
+              stroke="#0a0a0a"
+              stroke-width="2.5"
+            />
+            <text
+              x="336"
+              y="345"
+              font-size="11"
+              font-weight="700"
+              fill="#0a0a0a"
+              text-anchor="middle"
+            >
+              MutationObserver starts watching document.body
+            </text>
+
+            <rect
+              x="16"
+              y="376"
+              width="640"
+              height="28"
+              fill="none"
+              stroke="#0a0a0a"
+              stroke-width="2"
+              stroke-dasharray="8,4"
+            />
+            <text
+              x="336"
+              y="395"
+              font-size="10"
+              fill="#888"
+              text-anchor="middle"
+              font-weight="700"
+            >
+              - runtime: page is now live -
+            </text>
+
+            <line
+              x1="336"
+              y1="404"
+              x2="336"
+              y2="420"
+              stroke="#0a0a0a"
+              stroke-width="2"
+              stroke-dasharray="5,4"
+            />
+            <polygon points="330,416 342,416 336,426" fill="#0a0a0a" />
+
+            <rect
+              x="16"
+              y="426"
+              width="640"
+              height="40"
+              fill="#fef9c3"
+              stroke="#0a0a0a"
+              stroke-width="2.5"
+            />
+            <text
+              x="336"
+              y="451"
+              font-size="11"
+              font-weight="700"
+              fill="#713f12"
+              text-anchor="middle"
+            >
+              DOM mutation: element added / class changed
+            </text>
+
+            <line
+              x1="336"
+              y1="466"
+              x2="336"
+              y2="486"
+              stroke="#0a0a0a"
+              stroke-width="2"
+            />
+            <polygon points="330,482 342,482 336,492" fill="#0a0a0a" />
+
+            <rect
+              x="16"
+              y="492"
+              width="640"
+              height="40"
+              fill="#dbeafe"
+              stroke="#0a0a0a"
+              stroke-width="2.5"
+            />
+            <text
+              x="336"
+              y="517"
+              font-size="11"
+              font-weight="700"
+              fill="#1e40af"
+              text-anchor="middle"
+            >
+              _pendingNodes.add() → schedule rAF → _flushPending()
+            </text>
+
+            <line
+              x1="336"
+              y1="532"
+              x2="336"
+              y2="552"
+              stroke="#0a0a0a"
+              stroke-width="2"
+            />
+            <polygon points="330,548 342,548 336,558" fill="#0a0a0a" />
+
+            <rect x="16" y="558" width="640" height="48" fill="#0a0a0a" />
+            <text
+              x="336"
+              y="578"
+              font-size="11"
+              font-weight="700"
+              fill="#86efac"
+              text-anchor="middle"
+            >
+              Element styled. style="..." injected inline.
+            </text>
+            <text
+              x="336"
+              y="596"
+              font-size="10"
+              fill="#60b5ff"
+              text-anchor="middle"
+            >
+              data-chai-applied="chai-p-2 chai-flex ..." stamped on element.
+            </text>
+          </svg>
+          <p class="svg-caption">
+            The same processElement() call handles both the initial scan and
+            every subsequent observer-triggered update.
+          </p>
+        </div>
+
+        <div class="callout green">
+          The four-layer architecture: <strong>data layer</strong> (style map) →
+          <strong>parsing layer</strong> (applyStyleString) →
+          <strong>traversal layer</strong> (processElement, scanDOM) →
+          <strong>reactivity layer</strong> (MutationObserver + RAF). Each layer
+          does one thing and can be understood, tested, and replaced
+          independently.
+        </div>
+      </section>
+
+      <section class="section" id="public-api" aria-labelledby="h-api">
+        <h2 class="section-title" id="h-api">
+          <span class="section-num">09</span>
+          Public API
+        </h2>
+        <p class="prose">
+          Four methods are exposed on <code>window.ChaiWind</code>. Three are
+          functional; one is a developer ergonomics helper.
+        </p>
+
+        <div class="api-method">
+          <div class="api-method-header">
+            <span class="badge badge-blue">init</span>
+            ChaiWind.init(options?)
+          </div>
+          <div class="api-method-body">
+            <p style="margin: 0 0 10px">
+              Merges optional extra styles into the map via
+              <code>Object.assign()</code>, then calls
+              <code>scanDOM()</code> and starts the MutationObserver. Called
+              automatically - you only call it manually if you want custom
+              styles or need to re-init.
+            </p>
+            <div class="code-block" style="margin: 0">
+              <pre style="margin: 0; white-space: pre">ChaiWind.init({
+  debug: <span style="color: #86efac">true</span>, <span style="color: #888">// log matched elements to console</span>
+  styles: { <span style="color: #888">// extend the style map before first scan</span>
+    <span style="color: #86efac">"my-card"</span>: <span style="color: #60b5ff">"background:#fff; border-radius:8px"</span>
+  }
+});</pre>
+            </div>
+          </div>
+        </div>
+
+        <div class="api-method">
+          <div class="api-method-header">
+            <span class="badge badge-orange">register</span>
+            ChaiWind.register(newStyles)
+          </div>
+          <div class="api-method-body">
+            <p style="margin: 0 0 10px">
+              Adds new class mappings at runtime. After merging into
+              <code>customStyles</code>, it uses <code>[class~="cls"]</code> to
+              find only the elements that actually carry the new class -
+              avoiding a full re-scan.
+            </p>
+            <div class="code-block" style="margin: 0 0 12px">
+              <pre style="margin: 0; white-space: pre">ChaiWind.register({
+  <span style="color: #86efac">"chai-card-elevated"</span>: <span style="color: #60b5ff">`
+    background-color: #fff;
+    border-radius: 12px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+    padding: 24px
+  `</span>
+});</pre>
+            </div>
+            <p style="margin: 0; font-size: 12px; color: #555">
+              Elements with that class that loaded before
+              <code>register()</code> was called are retroactively styled - the
+              scan-and-match pattern is not a one-shot operation.
+            </p>
+          </div>
+        </div>
+
+        <div class="api-method">
+          <div class="api-method-header">
+            <span class="badge badge-green">refresh</span>
+            ChaiWind.refresh()
+          </div>
+          <div class="api-method-body">
+            Calls <code>scanDOM()</code> manually. An escape hatch for cases
+            where DOM mutations happened through a framework's reconciler in a
+            way the observer missed, or after a batch class update. In practice
+            the observer handles everything, but the escape hatch is good API
+            design.
+          </div>
+        </div>
+
+        <div class="api-method">
+          <div class="api-method-header">
+            <span
+              class="badge"
+              style="background: #f5f3ff; color: #6b21a8; border-color: #0a0a0a"
+              >listClasses</span
+            >
+            ChaiWind.listClasses()
+          </div>
+          <div class="api-method-body">
+            Calls <code>console.table(customStyles)</code> - renders the full
+            style map as a sortable, searchable table in DevTools. Useful for
+            checking what classes are registered and how they resolve.
+          </div>
+        </div>
+
+        <p class="prose" style="margin-top: 16px">
+          The key insight in <code>register()</code> is that it targets only
+          elements that need updating:
+        </p>
+        <div
+          class="svg-wrap"
+          role="img"
+          aria-label="Diagram comparing full re-scan versus targeted register query"
+        >
+          <svg
+            viewBox="0 0 680 160"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+            style="font-family: &quot;Space Mono&quot;, monospace"
+          >
+            <rect
+              x="16"
+              y="16"
+              width="295"
+              height="128"
+              fill="#fee2e2"
+              stroke="#0a0a0a"
+              stroke-width="2"
+            />
+            <text x="28" y="36" font-size="10" font-weight="700" fill="#991b1b">
+              full re-scan (naive)
+            </text>
+            <text x="28" y="54" font-size="10" fill="#374151">
+              querySelectorAll('*')
+            </text>
+            <text x="28" y="70" font-size="10" fill="#374151">
+              Walk every element.
+            </text>
+            <text x="28" y="86" font-size="10" fill="#374151">
+              Process all chai classes again.
+            </text>
+            <text
+              x="28"
+              y="106"
+              font-size="10"
+              fill="#991b1b"
+              font-weight="700"
+            >
+              O(all elements in DOM)
+            </text>
+            <text x="28" y="122" font-size="10" fill="#991b1b">
+              Wasteful after page load.
+            </text>
+            <text x="28" y="136" font-size="10" fill="#991b1b">
+              Re-runs work already done.
+            </text>
+
+            <rect
+              x="369"
+              y="16"
+              width="295"
+              height="128"
+              fill="#dcfce7"
+              stroke="#0a0a0a"
+              stroke-width="2"
+            />
+            <text
+              x="381"
+              y="36"
+              font-size="10"
+              font-weight="700"
+              fill="#166534"
+            >
+              register() targeted query
+            </text>
+            <text x="381" y="54" font-size="10" fill="#374151">
+              querySelectorAll('[class~="new-cls"]')
+            </text>
+            <text x="381" y="70" font-size="10" fill="#374151">
+              Finds only elements with that class.
+            </text>
+            <text x="381" y="86" font-size="10" fill="#374151">
+              Processes only those elements.
+            </text>
+            <text
+              x="381"
+              y="106"
+              font-size="10"
+              fill="#166534"
+              font-weight="700"
+            >
+              O(elements with new class)
+            </text>
+            <text x="381" y="122" font-size="10" fill="#166534">
+              Usually 1–5 elements.
+            </text>
+            <text x="381" y="136" font-size="10" fill="#166534">
+              Zero redundant work. ✓
+            </text>
+
+            <rect x="320" y="62" width="40" height="36" fill="#0a0a0a" />
+            <text
+              x="340"
+              y="85"
+              font-size="12"
+              font-weight="700"
+              fill="#fdfaf2"
+              text-anchor="middle"
+            >
+              vs
+            </text>
+          </svg>
+          <p class="svg-caption">
+            register() is surgical - it only processes the elements that
+            actually need the new style.
+          </p>
+        </div>
+      </section>
+
+      <section class="section" id="takeaways" aria-labelledby="h-takeaways">
+        <h2 class="section-title" id="h-takeaways">
+          <span class="section-num">10</span>
+          Key Takeaways
+        </h2>
+        <p class="prose">
+          chai-wind is small, but it exercises a dense cluster of browser APIs.
+          Building it from scratch surfaces behaviours that are easy to take for
+          granted:
+        </p>
+
+        <ul class="takeaway-list">
+          <li>
+            <div>
+              <strong>The DOM is a live tree, not a snapshot.</strong>
+              <code>querySelectorAll</code> gives you a static NodeList at the
+              moment of calling, but the DOM keeps changing.
+              <code>MutationObserver</code> is the right tool for tracking
+              changes - not polling with <code>setInterval</code>.
+            </div>
+          </li>
+          <li>
+            <div>
+              <strong>style.setProperty() vs cssText is not trivial.</strong>
+              Overwriting <code>cssText</code> is only safe if you own all
+              inline styles on that element. The moment any other code touches
+              them, you have a conflict. <code>setProperty</code> is additive
+              and cooperative.
+            </div>
+          </li>
+          <li>
+            <div>
+              <strong>classList is a proper API, not a string split.</strong>
+              It handles whitespace edge cases, provides
+              <code>add</code>/<code>remove</code>/<code>toggle</code>, and
+              fires MutationObserver attribute events when you use it.
+            </div>
+          </li>
+          <li>
+            <div>
+              <strong>nodeType guards matter.</strong> The DOM tree contains
+              many non-element nodes. Defensive guards at the top of DOM-walking
+              functions prevent silent <code>undefined</code> errors that are
+              hard to debug.
+            </div>
+          </li>
+          <li>
+            <div>
+              <strong>DOMContentLoaded vs readyState.</strong> Scripts in
+              <code>&lt;head&gt;</code> without <code>defer</code> run before
+              the body is parsed. Checking <code>readyState</code> and falling
+              back to <code>DOMContentLoaded</code> makes a DOM-manipulation
+              script safe regardless of where it's placed.
+            </div>
+          </li>
+          <li>
+            <div>
+              <strong>Batching via requestAnimationFrame.</strong> Processing
+              mutations synchronously in the observer callback can cause layout
+              thrash. Collecting into a <code>Set</code> and flushing on the
+              next frame coalesces many changes into one pass.
+            </div>
+          </li>
+        </ul>
+
+        <div
+          style="
+            background: var(--ink);
+            color: var(--cream);
+            padding: 24px;
+            border: 3px solid var(--cream);
+            margin-top: 28px;
+          "
+        >
+          <p
+            style="
+              font-size: 12px;
+              line-height: 1.85;
+              margin: 0;
+              color: #94a3b8;
+            "
+          >
+            The system has four layers: a
+            <span style="color: var(--orange)">data layer</span> (style map) → a
+            <span style="color: var(--blue)">parsing layer</span>
+            (applyStyleString) → a
+            <span style="color: #86efac">traversal layer</span> (processElement,
+            scanDOM) → a
+            <span style="color: #f9a8d4">reactivity layer</span>
+            (MutationObserver + RAF). Each layer does one thing. Each can be
+            understood, tested, and replaced independently. That separation is
+            not accidental - it's what makes the whole thing legible.
+          </p>
+        </div>
+      </section>
+
+      <footer
+        style="
+          padding: 16px 24px;
+          border: 4px solid var(--ink);
+          box-shadow: 5px 5px 0 var(--ink);
+          background: var(--orange);
+          font-size: 12px;
+          color: var(--ink);
+          text-align: center;
+          text-transform: uppercase;
+          font-weight: 700;
+          letter-spacing: 0.5px;
+          margin-top: 8px;
+        "
+      >
+        <p style="margin: 0 0 6px">
+          chai-wind - zero stylesheets, 100% inline &middot;
+          <a
+            href="index.html"
+            style="color: var(--ink); text-decoration: underline"
+            >← back to POC</a
+          >
+          &middot;
+          <a
+            href="https://github.com/atharvdange618/Chaiwind"
+            target="_blank"
+            rel="noopener noreferrer"
+            style="color: var(--ink); text-decoration: underline"
+            >GitHub</a
+          >
+          &middot;
+          <a
+            href="https://www.npmjs.com/package/chaiwindjs"
+            target="_blank"
+            rel="noopener noreferrer"
+            style="color: var(--ink); text-decoration: underline"
+            >npm</a
+          >
+        </p>
+        <p style="margin: 0; font-size: 10px; opacity: 0.7">
+          This docs page is styled by chai-wind itself.
+        </p>
+      </footer>
+    </div>
+
+    <script src="chai-wind.js"></script>
+  </body>
+</html>
