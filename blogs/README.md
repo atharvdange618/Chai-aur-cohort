@@ -321,3 +321,13 @@
   </a>
 
 <br>
+
+### [I Intentionally Built a Buggy Auth System. Here's Everything That Was Wrong With It](https://blog.atharvdangedev.in/posts/i-intentionally-built-a-buggy-auth-system-heres-everything-that-was-wrong-with-it)
+
+  <a href="https://blog.atharvdangedev.in/posts/i-intentionally-built-a-buggy-auth-system-heres-everything-that-was-wrong-with-it">
+      <p align=center>
+      <img width = "500px" alt="I Intentionally Built a Buggy Auth System. Here's Everything That Was Wrong With It" src="./assets/auth-system.png">
+    <p>
+  </a>
+
+<br>
