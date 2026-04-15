@@ -351,3 +351,13 @@
   </a>
 
 <br>
+
+### [Error Handling in JavaScript: Try, Catch, Finally](https://blog.atharvdangedev.in/posts/error-handling-in-javascript-try-catch-finally)
+
+  <a href="https://blog.atharvdangedev.in/posts/error-handling-in-javascript-try-catch-finally">
+      <p align=center>
+      <img width = "500px" alt="Error Handling in JavaScript: Try, Catch, Finally" src="./assets/try-catch.png">
+    <p>
+  </a>
+
+<br>
