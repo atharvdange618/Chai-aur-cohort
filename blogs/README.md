@@ -371,3 +371,13 @@
   </a>
 
 <br>
+
+### [Async/Await in JavaScript: Writing Cleaner Asynchronous Code](https://blog.atharvdangedev.in/posts/async-await-in-javascript-writing-cleaner-asynchronous-code)
+
+  <a href="https://blog.atharvdangedev.in/posts/async-await-in-javascript-writing-cleaner-asynchronous-code">
+      <p align=center>
+      <img width = "500px" alt="Async/Await in JavaScript: Writing Cleaner Asynchronous Code" src="./assets/async-await.png">
+    <p>
+  </a>
+
+<br>
