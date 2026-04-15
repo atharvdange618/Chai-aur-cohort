@@ -391,3 +391,13 @@
   </a>
 
 <br>
+
+### [String Polyfills and Common Interview Methods in JavaScript](https://blog.atharvdangedev.in/posts/string-polyfills-and-common-interview-methods-in-javascript)
+
+  <a href="https://blog.atharvdangedev.in/posts/string-polyfills-and-common-interview-methods-in-javascript">
+      <p align=center>
+      <img width = "500px" alt="String Polyfills and Common Interview Methods in JavaScript" src="./assets/string-polyfills.png">
+    <p>
+  </a>
+
+<br>
