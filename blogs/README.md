@@ -331,3 +331,13 @@
   </a>
 
 <br>
+
+### [Building chai-wind: How I Cloned Tailwind's Core Idea From Scratch](https://blog.atharvdangedev.in/posts/building-chai-wind-how-i-cloned-tailwinds-core-idea-from-scratch)
+
+  <a href="https://blog.atharvdangedev.in/posts/building-chai-wind-how-i-cloned-tailwinds-core-idea-from-scratch">
+      <p align=center>
+      <img width = "500px" alt="Building chai-wind: How I Cloned Tailwind's Core Idea From Scratch" src="./assets/chaiwind.png">
+    <p>
+  </a>
+
+<br>
