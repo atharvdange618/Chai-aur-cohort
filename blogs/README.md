@@ -361,3 +361,13 @@
   </a>
 
 <br>
+
+### [Synchronous vs Asynchronous JavaScript: Understanding How JavaScript Handles Tasks](https://blog.atharvdangedev.in/posts/synchronous-vs-asynchronous-javascript-understanding-how-javascript-handles-tasks)
+
+  <a href="https://blog.atharvdangedev.in/posts/synchronous-vs-asynchronous-javascript-understanding-how-javascript-handles-tasks">
+      <p align=center>
+      <img width = "500px" alt="Synchronous vs Asynchronous JavaScript: Understanding How JavaScript Handles Tasks" src="./assets/sync-async.png">
+    <p>
+  </a>
+
+<br>
