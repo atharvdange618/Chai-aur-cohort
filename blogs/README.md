@@ -341,3 +341,13 @@
   </a>
 
 <br>
+
+### [JavaScript Promises Explained for Beginners](https://blog.atharvdangedev.in/posts/javascript-promises-explained-for-beginners)
+
+  <a href="https://blog.atharvdangedev.in/posts/javascript-promises-explained-for-beginners">
+      <p align=center>
+      <img width = "500px" alt="JavaScript Promises Explained for Beginners" src="./assets/js-promises-beg.png">
+    <p>
+  </a>
+
+<br>
