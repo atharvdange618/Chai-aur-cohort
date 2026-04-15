@@ -381,3 +381,13 @@
   </a>
 
 <br>
+
+### [Callbacks in JavaScript: Why They Exist](https://blog.atharvdangedev.in/posts/callbacks-in-javascript-why-they-exist)
+
+  <a href="https://blog.atharvdangedev.in/posts/callbacks-in-javascript-why-they-exist">
+      <p align=center>
+      <img width = "500px" alt="Callbacks in JavaScript: Why They Exist" src="./assets/callbacks.png">
+    <p>
+  </a>
+
+<br>
