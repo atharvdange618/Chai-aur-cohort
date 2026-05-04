@@ -401,3 +401,33 @@
   </a>
 
 <br>
+
+### [Map and Set in JavaScript: The Modern Way to Store Data](https://blog.atharvdangedev.in/posts/map-and-set-in-javascript-the-modern-way-to-store-data)
+
+  <a href="https://blog.atharvdangedev.in/posts/map-and-set-in-javascript-the-modern-way-to-store-data">
+      <p align=center>
+      <img width = "500px" alt="Map and Set in JavaScript: The Modern Way to Store Data" src="./assets/map-set.png">
+    <p>
+  </a>
+
+<br>
+
+### [The `new` Keyword in JavaScript: What Actually Happens Under the Hood](https://blog.atharvdangedev.in/posts/the-new-keyword-in-javascript-what-actually-happens-under-the-hood)
+
+  <a href="https://blog.atharvdangedev.in/posts/the-new-keyword-in-javascript-what-actually-happens-under-the-hood">
+      <p align=center>
+      <img width = "500px" alt="The `new` Keyword in JavaScript: What Actually Happens Under the Hood" src="./assets/new-keyword.png">
+    <p>
+  </a>
+
+<br>
+
+### [Linux File System Hunting: What I Found When I Stopped Running Commands and Started Reading](https://blog.atharvdangedev.in/posts/linux-file-system-hunting-what-i-found-when-i-stopped-running-commands-and-started-reading)
+
+  <a href="https://blog.atharvdangedev.in/posts/linux-file-system-hunting-what-i-found-when-i-stopped-running-commands-and-started-reading">
+      <p align=center>
+      <img width = "500px" alt="Linux File System Hunting: What I Found When I Stopped Running Commands and Started Reading" src="./assets/linux-file-system-hunting.png">
+    <p>
+  </a>
+
+<br>
