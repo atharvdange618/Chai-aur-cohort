@@ -552,3 +552,12 @@
 
 <br>
 
+### [Storing Uploaded Files and Serving Them in Express](https://blog.atharvdangedev.in/posts/storing-uploaded-files-and-serving-them-in-express)
+
+  <a href="https://blog.atharvdangedev.in/posts/storing-uploaded-files-and-serving-them-in-express">
+      <p align=center>
+      <img width = "500px" alt="Storing Uploaded Files and Serving Them in Express" src="./assets/storing-upload-files.png">
+    <p>
+  </a>
+
+<br>
