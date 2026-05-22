@@ -1,40 +1,48 @@
-import { useState, useEffect } from 'react'
-import { Link } from 'react-router-dom'
+import { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 
-const API_URL = 'https://api.freeapi.app/api/v1/public/cats/cat/random'
+const API_URL = "https://api.freeapi.app/api/v1/public/cats/cat/random";
 
 interface Cat {
-  id: string
-  name: string
-  temperament: string
-  origin: string
-  description: string
-  life_span: string
-  indoor: number
-  lap: number
-  adaptability: number
-  affection_level: number
-  energy_level: number
-  intelligence: number
-  grooming: number
-  health_issues: number
-  social_needs: number
-  image: string
+  id: string;
+  name: string;
+  temperament: string;
+  origin: string;
+  description: string;
+  life_span: string;
+  indoor: number;
+  lap: number;
+  adaptability: number;
+  affection_level: number;
+  energy_level: number;
+  intelligence: number;
+  grooming: number;
+  health_issues: number;
+  social_needs: number;
+  image: string;
   weight: {
-    imperial: string
-    metric: string
-  }
+    imperial: string;
+    metric: string;
+  };
 }
 
 interface ApiResponse {
-  statusCode: number
-  data: Cat
-  message: string
-  success: boolean
+  statusCode: number;
+  data: Cat;
+  message: string;
+  success: boolean;
 }
 
-function RatingBar({ label, value, max = 5 }: { label: string; value: number; max?: number }) {
-  const percentage = (value / max) * 100
+function RatingBar({
+  label,
+  value,
+  max = 5,
+}: {
+  label: string;
+  value: number;
+  max?: number;
+}) {
+  const percentage = (value / max) * 100;
   return (
     <div className="flex items-center gap-2">
       <span className="text-xs text-[#6b6b6b] w-20">{label}</span>
@@ -45,53 +53,59 @@ function RatingBar({ label, value, max = 5 }: { label: string; value: number; ma
         />
       </div>
     </div>
-  )
+  );
 }
 
 export default function CatViewer() {
-  const [cat, setCat] = useState<Cat | null>(null)
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState('')
-  const [favorites, setFavorites] = useState<Cat[]>([])
+  const [cat, setCat] = useState<Cat | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+  const [favorites, setFavorites] = useState<Cat[]>([]);
 
   const fetchCat = async () => {
-    setLoading(true)
-    setError('')
+    setLoading(true);
+    setError("");
     try {
-      const res = await fetch(API_URL)
-      if (!res.ok) throw new Error('Failed to fetch cat')
-      const data: ApiResponse = await res.json()
+      const res = await fetch(API_URL);
+      if (!res.ok) throw new Error("Failed to fetch cat");
+      const data: ApiResponse = await res.json();
       if (data.success && data.data) {
-        setCat(data.data)
+        setCat(data.data);
       }
     } catch (err: unknown) {
-      const message = err instanceof Error ? err.message : 'Something went wrong'
-      setError(message)
+      const message =
+        err instanceof Error ? err.message : "Something went wrong";
+      setError(message);
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   useEffect(() => {
-    fetchCat()
-  }, [])
+    fetchCat();
+  }, []);
 
   const addToFavorites = () => {
-    if (cat && !favorites.find(c => c.id === cat.id)) {
-      setFavorites([...favorites, cat])
+    if (cat && !favorites.find((c) => c.id === cat.id)) {
+      setFavorites([...favorites, cat]);
     }
-  }
+  };
 
   return (
     <div className="min-h-screen p-8">
       <nav className="mb-8">
-        <Link to="/" className="inline-flex items-center text-[#2d2d2d] no-underline font-medium px-4 py-2 border-2 border-[#2d2d2d] rounded-lg hover:bg-[#2d2d2d] hover:text-[#faf8f5] transition-all">
+        <Link
+          to="/"
+          className="inline-flex items-center text-[#2d2d2d] no-underline font-medium px-4 py-2 border-2 border-[#2d2d2d] rounded-lg hover:bg-[#2d2d2d] hover:text-[#faf8f5] transition-all"
+        >
           ← Back to Projects
         </Link>
       </nav>
 
       <header className="mb-8 text-center">
-        <h1 className="text-3xl font-semibold text-[#2d2d2d]">Random Cat Viewer</h1>
+        <h1 className="text-3xl font-semibold text-[#2d2d2d]">
+          Random Cat Viewer
+        </h1>
         <p className="text-[#6b6b6b] mt-1">Meet a new furry friend</p>
       </header>
 
@@ -118,15 +132,19 @@ export default function CatViewer() {
             <div className="p-6">
               <div className="flex items-start justify-between mb-4">
                 <div>
-                  <h2 className="text-2xl font-semibold text-[#2d2d2d]">{cat.name}</h2>
+                  <h2 className="text-2xl font-semibold text-[#2d2d2d]">
+                    {cat.name}
+                  </h2>
                   <p className="text-[#6b6b6b]">{cat.origin}</p>
                 </div>
                 <button
                   onClick={addToFavorites}
-                  disabled={favorites.some(c => c.id === cat.id)}
+                  disabled={favorites.some((c) => c.id === cat.id)}
                   className="px-4 py-2 border-2 border-[#2d2d2d] rounded-lg font-medium hover:bg-[#2d2d2d] hover:text-[#faf8f5] transition-all disabled:opacity-50"
                 >
-                  {favorites.some(c => c.id === cat.id) ? 'Saved!' : 'Save ❤️'}
+                  {favorites.some((c) => c.id === cat.id)
+                    ? "Saved!"
+                    : "Save ❤️"}
                 </button>
               </div>
 
@@ -135,11 +153,15 @@ export default function CatViewer() {
               <div className="grid grid-cols-2 gap-4 mb-4">
                 <div className="bg-[#e8d5c4] rounded-lg p-3">
                   <p className="text-xs text-[#6b6b6b]">Temperament</p>
-                  <p className="text-sm font-medium text-[#2d2d2d]">{cat.temperament}</p>
+                  <p className="text-sm font-medium text-[#2d2d2d]">
+                    {cat.temperament}
+                  </p>
                 </div>
                 <div className="bg-[#e8d5c4] rounded-lg p-3">
                   <p className="text-xs text-[#6b6b6b]">Life Span</p>
-                  <p className="text-sm font-medium text-[#2d2d2d]">{cat.life_span} years</p>
+                  <p className="text-sm font-medium text-[#2d2d2d]">
+                    {cat.life_span} years
+                  </p>
                 </div>
               </div>
 
@@ -153,10 +175,14 @@ export default function CatViewer() {
 
               <div className="flex gap-2 mt-4">
                 {cat.lap === 1 && (
-                  <span className="text-xs bg-green-100 text-green-700 px-2 py-1 rounded">Lap Cat</span>
+                  <span className="text-xs bg-green-100 text-green-700 px-2 py-1 rounded">
+                    Lap Cat
+                  </span>
                 )}
                 {cat.indoor === 1 && (
-                  <span className="text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded">Indoor</span>
+                  <span className="text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded">
+                    Indoor
+                  </span>
                 )}
               </div>
             </div>
@@ -168,13 +194,15 @@ export default function CatViewer() {
               disabled={loading}
               className="px-6 py-3 bg-[#2d2d2d] text-[#faf8f5] rounded-lg font-medium hover:bg-[#1a1a1a] transition-all disabled:opacity-50"
             >
-              {loading ? 'Loading...' : 'Get Another Cat 🐱'}
+              {loading ? "Loading..." : "Get Another Cat 🐱"}
             </button>
           </div>
 
           {favorites.length > 0 && (
             <div className="mt-8">
-              <h3 className="text-xl font-semibold text-[#2d2d2d] mb-4">Saved Cats</h3>
+              <h3 className="text-xl font-semibold text-[#2d2d2d] mb-4">
+                Saved Cats
+              </h3>
               <div className="flex gap-4 overflow-x-auto pb-4">
                 {favorites.map((fav) => (
                   <div
@@ -186,7 +214,9 @@ export default function CatViewer() {
                       alt={fav.name}
                       className="w-full h-32 object-cover"
                     />
-                    <p className="p-2 text-sm font-medium text-[#2d2d2d] text-center">{fav.name}</p>
+                    <p className="p-2 text-sm font-medium text-[#2d2d2d] text-center">
+                      {fav.name}
+                    </p>
                   </div>
                 ))}
               </div>
@@ -195,5 +225,5 @@ export default function CatViewer() {
         </div>
       ) : null}
     </div>
-  )
+  );
 }

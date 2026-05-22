@@ -1,27 +1,69 @@
-import { Link } from 'react-router-dom'
+import { Link } from "react-router-dom";
 
 const projects = [
-  { id: 1, name: 'Authentication App', description: 'FreeAPI - Build an Authentication App' },
-  { id: 2, name: 'YouTube Videos UI', description: 'FreeAPI - YouTube Videos Listing UI' },
-  { id: 3, name: 'Product Listing', description: 'FreeAPI - Product Listing Interface' },
-  { id: 4, name: 'Quotes Listing', description: 'FreeAPI - Quotes Listing Application' },
-  { id: 5, name: 'Jokes Viewer', description: 'FreeAPI - Jokes Viewer Application' },
-  { id: 6, name: 'Random Cat Viewer', description: 'FreeAPI - Random Cat Viewer' },
-  { id: 7, name: 'Meals Listing', description: 'FreeAPI - Meals Listing Interface' },
-  { id: 8, name: 'Random Users UI', description: 'FreeAPI - Random Users UI' },
-]
+  {
+    id: 1,
+    name: "Authentication App",
+    description: "FreeAPI - Build an Authentication App",
+  },
+  {
+    id: 2,
+    name: "YouTube Videos UI",
+    description: "FreeAPI - YouTube Videos Listing UI",
+  },
+  {
+    id: 3,
+    name: "Product Listing",
+    description: "FreeAPI - Product Listing Interface",
+  },
+  {
+    id: 4,
+    name: "Quotes Listing",
+    description: "FreeAPI - Quotes Listing Application",
+  },
+  {
+    id: 5,
+    name: "Jokes Viewer",
+    description: "FreeAPI - Jokes Viewer Application",
+  },
+  {
+    id: 6,
+    name: "Random Cat Viewer",
+    description: "FreeAPI - Random Cat Viewer",
+  },
+  {
+    id: 7,
+    name: "Meals Listing",
+    description: "FreeAPI - Meals Listing Interface",
+  },
+  { id: 8, name: "Random Users UI", description: "FreeAPI - Random Users UI" },
+  {
+    id: 9,
+    name: "Stopwatch & Timer",
+    description:
+      "Custom - Interactive stopwatch with lap recording and countdown timer",
+  },
+  {
+    id: 10,
+    name: "Tic Tac Toe",
+    description:
+      "Custom - Classic 3x3 game with local PvP and AI (Minimax) modes, score tracking, and retro sounds",
+  },
+];
 
 const socials = {
-  github: 'https://github.com/atharvdange618/Chai-aur-cohort',
-  twitter: 'https://twitter.com/atharvdangedev',
-  portfolio: 'https://www.atharvdangedev.in',
-}
+  github: "https://github.com/atharvdange618/Chai-aur-cohort",
+  twitter: "https://twitter.com/atharvdangedev",
+  portfolio: "https://www.atharvdangedev.in",
+};
 
 export default function Home() {
   return (
     <div className="min-h-screen p-12">
       <header className="text-center mb-12">
-        <h1 className="text-4xl font-semibold text-[#2d2d2d] mb-2">My Projects</h1>
+        <h1 className="text-4xl font-semibold text-[#2d2d2d] mb-2">
+          My Projects
+        </h1>
         <p className="text-[#6b6b6b] mb-4">Select a project to explore</p>
         <div className="flex justify-center gap-4">
           <a
@@ -69,11 +111,13 @@ export default function Home() {
             <div className="w-9 h-9 bg-[#e8d5c4] rounded-lg flex items-center justify-center font-semibold text-[#2d2d2d] mb-4">
               {project.id}
             </div>
-            <h2 className="text-xl font-semibold text-[#2d2d2d] mb-2">{project.name}</h2>
+            <h2 className="text-xl font-semibold text-[#2d2d2d] mb-2">
+              {project.name}
+            </h2>
             <p className="text-sm text-[#6b6b6b]">{project.description}</p>
           </Link>
         ))}
       </div>
     </div>
-  )
+  );
 }

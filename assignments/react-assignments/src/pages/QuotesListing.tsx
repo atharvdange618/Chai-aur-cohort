@@ -1,67 +1,71 @@
-import { useState, useEffect } from 'react'
-import { Link } from 'react-router-dom'
+import { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 
-const API_URL = 'https://api.freeapi.app/api/v1/public/quotes'
+const API_URL = "https://api.freeapi.app/api/v1/public/quotes";
 
 interface Quote {
-  id: number
-  author: string
-  content: string
-  tags: string[]
-  authorSlug: string
-  length: number
-  dateAdded: string
-  dateModified: string
+  id: number;
+  author: string;
+  content: string;
+  tags: string[];
+  authorSlug: string;
+  length: number;
+  dateAdded: string;
+  dateModified: string;
 }
 
 interface ApiResponse {
-  statusCode: number
+  statusCode: number;
   data: {
-    page: number
-    limit: number
-    totalPages: number
-    previousPage: boolean
-    nextPage: boolean
-    totalItems: number
-    currentPageItems: number
-    data: Quote[]
-  }
-  message: string
-  success: boolean
+    page: number;
+    limit: number;
+    totalPages: number;
+    previousPage: boolean;
+    nextPage: boolean;
+    totalItems: number;
+    currentPageItems: number;
+    data: Quote[];
+  };
+  message: string;
+  success: boolean;
 }
 
 export default function QuotesListing() {
-  const [quotes, setQuotes] = useState<Quote[]>([])
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState('')
-  const [page, setPage] = useState(1)
+  const [quotes, setQuotes] = useState<Quote[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+  const [page, setPage] = useState(1);
 
   const fetchQuotes = async (pageNum: number = 1) => {
-    setLoading(true)
-    setError('')
+    setLoading(true);
+    setError("");
     try {
-      const res = await fetch(`${API_URL}?page=${pageNum}&limit=12`)
-      if (!res.ok) throw new Error('Failed to fetch quotes')
-      const data: ApiResponse = await res.json()
+      const res = await fetch(`${API_URL}?page=${pageNum}&limit=12`);
+      if (!res.ok) throw new Error("Failed to fetch quotes");
+      const data: ApiResponse = await res.json();
       if (data.success && data.data?.data) {
-        setQuotes(data.data.data)
+        setQuotes(data.data.data);
       }
     } catch (err: unknown) {
-      const message = err instanceof Error ? err.message : 'Something went wrong'
-      setError(message)
+      const message =
+        err instanceof Error ? err.message : "Something went wrong";
+      setError(message);
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   useEffect(() => {
-    fetchQuotes()
-  }, [])
+    fetchQuotes();
+  }, []);
 
   return (
     <div className="min-h-screen p-8">
       <nav className="mb-8">
-        <Link to="/" className="inline-flex items-center text-[#2d2d2d] no-underline font-medium px-4 py-2 border-2 border-[#2d2d2d] rounded-lg hover:bg-[#2d2d2d] hover:text-[#faf8f5] transition-all">
+        <Link
+          to="/"
+          className="inline-flex items-center text-[#2d2d2d] no-underline font-medium px-4 py-2 border-2 border-[#2d2d2d] rounded-lg hover:bg-[#2d2d2d] hover:text-[#faf8f5] transition-all"
+        >
           ← Back to Projects
         </Link>
       </nav>
@@ -94,7 +98,9 @@ export default function QuotesListing() {
                   {quote.content}
                 </p>
                 <div className="flex items-center justify-between pt-4 border-t border-[#2d2d2d]/20">
-                  <span className="text-[#6b6b6b] font-medium">— {quote.author}</span>
+                  <span className="text-[#6b6b6b] font-medium">
+                    — {quote.author}
+                  </span>
                 </div>
                 {quote.tags.length > 0 && (
                   <div className="flex flex-wrap gap-2 mt-3">
@@ -114,7 +120,11 @@ export default function QuotesListing() {
 
           <div className="flex justify-center items-center gap-4 mt-8">
             <button
-              onClick={() => { const p = page - 1; setPage(p); fetchQuotes(p) }}
+              onClick={() => {
+                const p = page - 1;
+                setPage(p);
+                fetchQuotes(p);
+              }}
               disabled={page === 1 || loading}
               className="px-4 py-2 border-2 border-[#2d2d2d] rounded-lg font-medium hover:bg-[#2d2d2d] hover:text-[#faf8f5] transition-all disabled:opacity-50 disabled:cursor-not-allowed"
             >
@@ -122,7 +132,11 @@ export default function QuotesListing() {
             </button>
             <span className="text-[#6b6b6b]">Page {page}</span>
             <button
-              onClick={() => { const p = page + 1; setPage(p); fetchQuotes(p) }}
+              onClick={() => {
+                const p = page + 1;
+                setPage(p);
+                fetchQuotes(p);
+              }}
               disabled={loading}
               className="px-4 py-2 border-2 border-[#2d2d2d] rounded-lg font-medium hover:bg-[#2d2d2d] hover:text-[#faf8f5] transition-all disabled:opacity-50 disabled:cursor-not-allowed"
             >
@@ -132,5 +146,5 @@ export default function QuotesListing() {
         </>
       )}
     </div>
-  )
+  );
 }

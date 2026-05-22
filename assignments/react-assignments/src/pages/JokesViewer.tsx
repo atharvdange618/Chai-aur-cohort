@@ -1,65 +1,73 @@
-import { useState, useEffect } from 'react'
-import { Link } from 'react-router-dom'
+import { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 
-const API_URL = 'https://api.freeapi.app/api/v1/public/randomjokes'
+const API_URL = "https://api.freeapi.app/api/v1/public/randomjokes";
 
 interface Joke {
-  id: number
-  content: string
-  categories: string[]
+  id: number;
+  content: string;
+  categories: string[];
 }
 
 interface ApiResponse {
-  statusCode: number
+  statusCode: number;
   data: {
-    page: number
-    limit: number
-    totalPages: number
-    previousPage: boolean
-    nextPage: boolean
-    totalItems: number
-    currentPageItems: number
-    data: Joke[]
-  }
-  message: string
-  success: boolean
+    page: number;
+    limit: number;
+    totalPages: number;
+    previousPage: boolean;
+    nextPage: boolean;
+    totalItems: number;
+    currentPageItems: number;
+    data: Joke[];
+  };
+  message: string;
+  success: boolean;
 }
 
 export default function JokesViewer() {
-  const [jokes, setJokes] = useState<Joke[]>([])
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState('')
-  const [page, setPage] = useState(1)
-  const [showExplicit, setShowExplicit] = useState(false)
+  const [jokes, setJokes] = useState<Joke[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+  const [page, setPage] = useState(1);
+  const [showExplicit, setShowExplicit] = useState(false);
 
   const fetchJokes = async (pageNum: number = 1) => {
-    setLoading(true)
-    setError('')
+    setLoading(true);
+    setError("");
     try {
-      const res = await fetch(`${API_URL}?page=${pageNum}&limit=12`)
-      if (!res.ok) throw new Error('Failed to fetch jokes')
-      const data: ApiResponse = await res.json()
+      const res = await fetch(`${API_URL}?page=${pageNum}&limit=12`);
+      if (!res.ok) throw new Error("Failed to fetch jokes");
+      const data: ApiResponse = await res.json();
       if (data.success && data.data?.data) {
-        setJokes(data.data.data)
+        setJokes(data.data.data);
       }
     } catch (err: unknown) {
-      const message = err instanceof Error ? err.message : 'Something went wrong'
-      setError(message)
+      const message =
+        err instanceof Error ? err.message : "Something went wrong";
+      setError(message);
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   useEffect(() => {
-    fetchJokes()
-  }, [])
+    fetchJokes();
+  }, []);
 
-  const filteredJokes = showExplicit ? jokes : jokes.filter(j => j.categories.length === 0 || !j.categories.includes('explicit'))
+  const filteredJokes = showExplicit
+    ? jokes
+    : jokes.filter(
+        (j) => j.categories.length === 0 || !j.categories.includes("explicit"),
+      );
 
   return (
     <div className="min-h-screen p-8">
       <nav className="mb-8">
-        <Link to="/" className="inline-flex items-center text-[#2d2d2d] no-underline font-medium px-4 py-2 border-2 border-[#2d2d2d] rounded-lg hover:bg-[#2d2d2d] hover:text-[#faf8f5] transition-all">
+        <Link
+          to="/"
+          className="inline-flex items-center text-[#2d2d2d] no-underline font-medium px-4 py-2 border-2 border-[#2d2d2d] rounded-lg hover:bg-[#2d2d2d] hover:text-[#faf8f5] transition-all"
+        >
           ← Back to Projects
         </Link>
       </nav>
@@ -108,9 +116,9 @@ export default function JokesViewer() {
                       <span
                         key={cat}
                         className={`text-xs px-2 py-0.5 rounded ${
-                          cat === 'explicit' 
-                            ? 'bg-red-100 text-red-700' 
-                            : 'bg-[#e8d5c4] text-[#2d2d2d]'
+                          cat === "explicit"
+                            ? "bg-red-100 text-red-700"
+                            : "bg-[#e8d5c4] text-[#2d2d2d]"
                         }`}
                       >
                         {cat}
@@ -124,7 +132,11 @@ export default function JokesViewer() {
 
           <div className="flex justify-center items-center gap-4 mt-8">
             <button
-              onClick={() => { const p = page - 1; setPage(p); fetchJokes(p) }}
+              onClick={() => {
+                const p = page - 1;
+                setPage(p);
+                fetchJokes(p);
+              }}
               disabled={page === 1 || loading}
               className="px-4 py-2 border-2 border-[#2d2d2d] rounded-lg font-medium hover:bg-[#2d2d2d] hover:text-[#faf8f5] transition-all disabled:opacity-50 disabled:cursor-not-allowed"
             >
@@ -132,7 +144,11 @@ export default function JokesViewer() {
             </button>
             <span className="text-[#6b6b6b]">Page {page}</span>
             <button
-              onClick={() => { const p = page + 1; setPage(p); fetchJokes(p) }}
+              onClick={() => {
+                const p = page + 1;
+                setPage(p);
+                fetchJokes(p);
+              }}
               disabled={loading}
               className="px-4 py-2 border-2 border-[#2d2d2d] rounded-lg font-medium hover:bg-[#2d2d2d] hover:text-[#faf8f5] transition-all disabled:opacity-50 disabled:cursor-not-allowed"
             >
@@ -142,5 +158,5 @@ export default function JokesViewer() {
         </>
       )}
     </div>
-  )
+  );
 }

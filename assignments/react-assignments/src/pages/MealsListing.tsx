@@ -1,76 +1,84 @@
-import { useState, useEffect } from 'react'
-import { Link } from 'react-router-dom'
+import { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 
-const API_URL = 'https://api.freeapi.app/api/v1/public/meals'
+const API_URL = "https://api.freeapi.app/api/v1/public/meals";
 
 interface Meal {
-  id: number
-  idMeal: string
-  strMeal: string
-  strCategory: string
-  strArea: string
-  strInstructions: string
-  strMealThumb: string
-  strTags: string | null
-  strYoutube: string | null
+  id: number;
+  idMeal: string;
+  strMeal: string;
+  strCategory: string;
+  strArea: string;
+  strInstructions: string;
+  strMealThumb: string;
+  strTags: string | null;
+  strYoutube: string | null;
 }
 
 interface ApiResponse {
-  statusCode: number
+  statusCode: number;
   data: {
-    page: number
-    limit: number
-    totalPages: number
-    previousPage: boolean
-    nextPage: boolean
-    totalItems: number
-    currentPageItems: number
-    data: Meal[]
-  }
-  message: string
-  success: boolean
+    page: number;
+    limit: number;
+    totalPages: number;
+    previousPage: boolean;
+    nextPage: boolean;
+    totalItems: number;
+    currentPageItems: number;
+    data: Meal[];
+  };
+  message: string;
+  success: boolean;
 }
 
 export default function MealsListing() {
-  const [meals, setMeals] = useState<Meal[]>([])
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState('')
-  const [page, setPage] = useState(1)
-  const [selectedMeal, setSelectedMeal] = useState<Meal | null>(null)
+  const [meals, setMeals] = useState<Meal[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+  const [page, setPage] = useState(1);
+  const [selectedMeal, setSelectedMeal] = useState<Meal | null>(null);
 
   const fetchMeals = async (pageNum: number = 1) => {
-    setLoading(true)
-    setError('')
+    setLoading(true);
+    setError("");
     try {
-      const res = await fetch(`${API_URL}?page=${pageNum}&limit=12`)
-      if (!res.ok) throw new Error('Failed to fetch meals')
-      const data: ApiResponse = await res.json()
+      const res = await fetch(`${API_URL}?page=${pageNum}&limit=12`);
+      if (!res.ok) throw new Error("Failed to fetch meals");
+      const data: ApiResponse = await res.json();
       if (data.success && data.data?.data) {
-        setMeals(data.data.data)
+        setMeals(data.data.data);
       }
     } catch (err: unknown) {
-      const message = err instanceof Error ? err.message : 'Something went wrong'
-      setError(message)
+      const message =
+        err instanceof Error ? err.message : "Something went wrong";
+      setError(message);
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   useEffect(() => {
-    fetchMeals()
-  }, [])
+    fetchMeals();
+  }, []);
 
   return (
     <div className="min-h-screen p-8">
       <nav className="mb-8">
-        <Link to="/" className="inline-flex items-center text-[#2d2d2d] no-underline font-medium px-4 py-2 border-2 border-[#2d2d2d] rounded-lg hover:bg-[#2d2d2d] hover:text-[#faf8f5] transition-all">
+        <Link
+          to="/"
+          className="inline-flex items-center text-[#2d2d2d] no-underline font-medium px-4 py-2 border-2 border-[#2d2d2d] rounded-lg hover:bg-[#2d2d2d] hover:text-[#faf8f5] transition-all"
+        >
           ← Back to Projects
         </Link>
       </nav>
 
       <header className="mb-8 text-center">
-        <h1 className="text-3xl font-semibold text-[#2d2d2d]">Meals & Recipes</h1>
-        <p className="text-[#6b6b6b] mt-1">Delicious recipes from around the world</p>
+        <h1 className="text-3xl font-semibold text-[#2d2d2d]">
+          Meals & Recipes
+        </h1>
+        <p className="text-[#6b6b6b] mt-1">
+          Delicious recipes from around the world
+        </p>
       </header>
 
       {error && (
@@ -113,7 +121,7 @@ export default function MealsListing() {
                   </div>
                   {meal.strTags && (
                     <div className="flex flex-wrap gap-1 mt-2">
-                      {meal.strTags.split(',').map((tag) => (
+                      {meal.strTags.split(",").map((tag) => (
                         <span key={tag} className="text-xs text-[#6b6b6b]">
                           #{tag.trim()}
                         </span>
@@ -127,7 +135,11 @@ export default function MealsListing() {
 
           <div className="flex justify-center items-center gap-4 mt-8">
             <button
-              onClick={() => { const p = page - 1; setPage(p); fetchMeals(p) }}
+              onClick={() => {
+                const p = page - 1;
+                setPage(p);
+                fetchMeals(p);
+              }}
               disabled={page === 1 || loading}
               className="px-4 py-2 border-2 border-[#2d2d2d] rounded-lg font-medium hover:bg-[#2d2d2d] hover:text-[#faf8f5] transition-all disabled:opacity-50 disabled:cursor-not-allowed"
             >
@@ -135,7 +147,11 @@ export default function MealsListing() {
             </button>
             <span className="text-[#6b6b6b]">Page {page}</span>
             <button
-              onClick={() => { const p = page + 1; setPage(p); fetchMeals(p) }}
+              onClick={() => {
+                const p = page + 1;
+                setPage(p);
+                fetchMeals(p);
+              }}
               disabled={loading}
               className="px-4 py-2 border-2 border-[#2d2d2d] rounded-lg font-medium hover:bg-[#2d2d2d] hover:text-[#faf8f5] transition-all disabled:opacity-50 disabled:cursor-not-allowed"
             >
@@ -146,8 +162,14 @@ export default function MealsListing() {
       )}
 
       {selectedMeal && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50" onClick={() => setSelectedMeal(null)}>
-          <div className="bg-[#faf8f5] border-2 border-[#2d2d2d] rounded-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
+        <div
+          className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50"
+          onClick={() => setSelectedMeal(null)}
+        >
+          <div
+            className="bg-[#faf8f5] border-2 border-[#2d2d2d] rounded-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto"
+            onClick={(e) => e.stopPropagation()}
+          >
             <div className="aspect-video bg-gray-100 overflow-hidden">
               <img
                 src={selectedMeal.strMealThumb}
@@ -158,7 +180,9 @@ export default function MealsListing() {
             <div className="p-6">
               <div className="flex items-start justify-between mb-4">
                 <div>
-                  <h2 className="text-2xl font-semibold text-[#2d2d2d]">{selectedMeal.strMeal}</h2>
+                  <h2 className="text-2xl font-semibold text-[#2d2d2d]">
+                    {selectedMeal.strMeal}
+                  </h2>
                   <div className="flex gap-2 mt-2">
                     <span className="text-xs bg-[#e8d5c4] text-[#2d2d2d] px-2 py-0.5 rounded">
                       {selectedMeal.strCategory}
@@ -178,8 +202,11 @@ export default function MealsListing() {
 
               {selectedMeal.strTags && (
                 <div className="flex flex-wrap gap-2 mb-4">
-                  {selectedMeal.strTags.split(',').map((tag) => (
-                    <span key={tag} className="text-xs bg-[#e8d5c4] text-[#2d2d2d] px-2 py-0.5 rounded">
+                  {selectedMeal.strTags.split(",").map((tag) => (
+                    <span
+                      key={tag}
+                      className="text-xs bg-[#e8d5c4] text-[#2d2d2d] px-2 py-0.5 rounded"
+                    >
                       {tag.trim()}
                     </span>
                   ))}
@@ -187,7 +214,9 @@ export default function MealsListing() {
               )}
 
               <div className="mb-4">
-                <h3 className="text-lg font-semibold text-[#2d2d2d] mb-2">Instructions</h3>
+                <h3 className="text-lg font-semibold text-[#2d2d2d] mb-2">
+                  Instructions
+                </h3>
                 <p className="text-[#6b6b6b] text-sm leading-relaxed whitespace-pre-line">
                   {selectedMeal.strInstructions}
                 </p>
@@ -208,5 +237,5 @@ export default function MealsListing() {
         </div>
       )}
     </div>
-  )
+  );
 }

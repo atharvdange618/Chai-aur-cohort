@@ -1,69 +1,73 @@
-import { useState, useEffect } from 'react'
-import { Link } from 'react-router-dom'
+import { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 
-const API_URL = 'https://api.freeapi.app/api/v1/public/randomproducts'
+const API_URL = "https://api.freeapi.app/api/v1/public/randomproducts";
 
 interface Product {
-  id: number
-  title: string
-  description: string
-  category: string
-  price: number
-  discountPercentage: number
-  rating: number
-  stock: number
-  brand: string
-  thumbnail: string
-  images: string[]
+  id: number;
+  title: string;
+  description: string;
+  category: string;
+  price: number;
+  discountPercentage: number;
+  rating: number;
+  stock: number;
+  brand: string;
+  thumbnail: string;
+  images: string[];
 }
 
 interface ApiResponse {
-  statusCode: number
+  statusCode: number;
   data: {
-    page: number
-    limit: number
-    totalPages: number
-    previousPage: boolean
-    nextPage: boolean
-    totalItems: number
-    currentPageItems: number
-    data: Product[]
-  }
-  message: string
-  success: boolean
+    page: number;
+    limit: number;
+    totalPages: number;
+    previousPage: boolean;
+    nextPage: boolean;
+    totalItems: number;
+    currentPageItems: number;
+    data: Product[];
+  };
+  message: string;
+  success: boolean;
 }
 
 export default function ProductListing() {
-  const [products, setProducts] = useState<Product[]>([])
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState('')
+  const [products, setProducts] = useState<Product[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
 
   useEffect(() => {
     const fetchProducts = async () => {
-      setLoading(true)
-      setError('')
+      setLoading(true);
+      setError("");
       try {
-        const res = await fetch(API_URL)
-        if (!res.ok) throw new Error('Failed to fetch products')
-        const data: ApiResponse = await res.json()
+        const res = await fetch(API_URL);
+        if (!res.ok) throw new Error("Failed to fetch products");
+        const data: ApiResponse = await res.json();
         if (data.success && data.data?.data) {
-          setProducts(data.data.data)
+          setProducts(data.data.data);
         }
       } catch (err: unknown) {
-        const message = err instanceof Error ? err.message : 'Something went wrong'
-        setError(message)
+        const message =
+          err instanceof Error ? err.message : "Something went wrong";
+        setError(message);
       } finally {
-        setLoading(false)
+        setLoading(false);
       }
-    }
+    };
 
-    fetchProducts()
-  }, [])
+    fetchProducts();
+  }, []);
 
   return (
     <div className="min-h-screen p-8">
       <nav className="mb-8">
-        <Link to="/" className="inline-flex items-center text-[#2d2d2d] no-underline font-medium px-4 py-2 border-2 border-[#2d2d2d] rounded-lg hover:bg-[#2d2d2d] hover:text-[#faf8f5] transition-all">
+        <Link
+          to="/"
+          className="inline-flex items-center text-[#2d2d2d] no-underline font-medium px-4 py-2 border-2 border-[#2d2d2d] rounded-lg hover:bg-[#2d2d2d] hover:text-[#faf8f5] transition-all"
+        >
           ← Back to Projects
         </Link>
       </nav>
@@ -86,7 +90,10 @@ export default function ProductListing() {
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
           {products.map((product) => (
-            <div key={product.id} className="bg-[#faf8f5] border-2 border-[#2d2d2d] rounded-xl overflow-hidden hover:-translate-y-1 hover:shadow-[6px_6px_0_#2d2d2d] transition-all duration-200">
+            <div
+              key={product.id}
+              className="bg-[#faf8f5] border-2 border-[#2d2d2d] rounded-xl overflow-hidden hover:-translate-y-1 hover:shadow-[6px_6px_0_#2d2d2d] transition-all duration-200"
+            >
               <div className="aspect-square bg-gray-100 overflow-hidden">
                 <img
                   src={product.thumbnail}
@@ -117,14 +124,22 @@ export default function ProductListing() {
                   </div>
                   <div className="flex items-center gap-1">
                     <span className="text-yellow-500">★</span>
-                    <span className="text-sm text-[#6b6b6b]">{product.rating}</span>
+                    <span className="text-sm text-[#6b6b6b]">
+                      {product.rating}
+                    </span>
                   </div>
                 </div>
                 <div className="mt-3 pt-3 border-t border-[#2d2d2d]/20">
-                  <span className={`text-xs ${product.stock > 0 ? 'text-green-600' : 'text-red-600'}`}>
-                    {product.stock > 0 ? `${product.stock} in stock` : 'Out of stock'}
+                  <span
+                    className={`text-xs ${product.stock > 0 ? "text-green-600" : "text-red-600"}`}
+                  >
+                    {product.stock > 0
+                      ? `${product.stock} in stock`
+                      : "Out of stock"}
                   </span>
-                  <span className="text-xs text-[#6b6b6b] ml-2">• {product.brand}</span>
+                  <span className="text-xs text-[#6b6b6b] ml-2">
+                    • {product.brand}
+                  </span>
                 </div>
               </div>
             </div>
@@ -132,5 +147,5 @@ export default function ProductListing() {
         </div>
       )}
     </div>
-  )
+  );
 }
