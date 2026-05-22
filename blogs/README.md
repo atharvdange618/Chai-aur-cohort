@@ -641,3 +641,13 @@
   </a>
 
 <br>
+
+### [Setting Up a Monorepo with pnpm and Turborepo](https://blog.atharvdangedev.in/posts/setting-up-a-monorepo-with-pnpm-and-turborepo)
+
+  <a href="https://blog.atharvdangedev.in/posts/setting-up-a-monorepo-with-pnpm-and-turborepo">
+      <p align=center>
+      <img width = "500px" alt="Setting Up a Monorepo with pnpm and Turborepo" src="./assets/turborepo.png">
+    <p>
+  </a>
+
+<br>
