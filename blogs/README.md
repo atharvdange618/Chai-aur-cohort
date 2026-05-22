@@ -591,3 +591,13 @@
   </a>
 
 <br>
+
+### [REST API Design Made Simple with Express.js](https://blog.atharvdangedev.in/posts/rest-api-design-made-simple-with-expressjs)
+
+  <a href="https://blog.atharvdangedev.in/posts/rest-api-design-made-simple-with-expressjs">
+      <p align=center>
+      <img width = "500px" alt="REST API Design Made Simple with Express.js" src="./assets/rest-apis.png">
+    <p>
+  </a>
+
+<br>
