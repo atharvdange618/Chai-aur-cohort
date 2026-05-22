@@ -541,3 +541,14 @@
   </a>
 
 <br>
+
+### [What is Node.js? JavaScript on the Server Explained](https://blog.atharvdangedev.in/posts/what-is-nodejs-javascript-on-the-server-explained)
+
+  <a href="https://blog.atharvdangedev.in/posts/what-is-nodejs-javascript-on-the-server-explained">
+      <p align=center>
+      <img width = "500px" alt="What is Node.js? JavaScript on the Server Explained" src="./assets/what-is-nodejs.png">
+    <p>
+  </a>
+
+<br>
+
