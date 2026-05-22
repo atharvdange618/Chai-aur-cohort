@@ -441,3 +441,13 @@
   </a>
 
 <br>
+
+### [JavaScript Modules: Import and Export Explained](https://blog.atharvdangedev.in/posts/javascript-modules-import-and-export-explained)
+
+  <a href="https://blog.atharvdangedev.in/posts/javascript-modules-import-and-export-explained">
+      <p align=center>
+      <img width = "500px" alt="JavaScript Modules: Import and Export Explained" src="./assets/javascript-modules.png">
+    <p>
+  </a>
+
+<br>
