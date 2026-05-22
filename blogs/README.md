@@ -431,3 +431,13 @@
   </a>
 
 <br>
+
+### [Async Code in Node.js: Callbacks and Promises](https://blog.atharvdangedev.in/posts/async-code-in-nodejs-callbacks-and-promises)
+
+  <a href="https://blog.atharvdangedev.in/posts/async-code-in-nodejs-callbacks-and-promises">
+      <p align=center>
+      <img width = "500px" alt="Async Code in Node.js: Callbacks and Promises" src="./assets/async-code.png">
+    <p>
+  </a>
+
+<br>
