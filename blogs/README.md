@@ -581,3 +581,13 @@
   </a>
 
 <br>
+
+### [Blocking vs Non-Blocking Code in Node.js](https://blog.atharvdangedev.in/posts/blocking-vs-non-blocking-code-in-nodejs)
+
+  <a href="https://blog.atharvdangedev.in/posts/blocking-vs-non-blocking-code-in-nodejs">
+      <p align=center>
+      <img width = "500px" alt="Blocking vs Non-Blocking Code in Node.js" src="./assets/blocking-code.png">
+    <p>
+  </a>
+
+<br>
