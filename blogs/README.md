@@ -571,3 +571,13 @@
   </a>
 
 <br>
+
+### [The Node.js Event Loop Explained](https://blog.atharvdangedev.in/posts/the-nodejs-event-loop-explained)
+
+  <a href="https://blog.atharvdangedev.in/posts/the-nodejs-event-loop-explained">
+      <p align=center>
+      <img width = "500px" alt="The Node.js Event Loop Explained" src="./assets/event-loops.png">
+    <p>
+  </a>
+
+<br>
