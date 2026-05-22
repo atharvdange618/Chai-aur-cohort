@@ -601,3 +601,14 @@
   </a>
 
 <br>
+
+### [Why Node.js is Perfect for Building Fast Web Applications](https://blog.atharvdangedev.in/posts/why-nodejs-is-perfect-for-building-fast-web-applications)
+
+  <a href="https://blog.atharvdangedev.in/posts/why-nodejs-is-perfect-for-building-fast-web-applications">
+      <p align=center>
+      <img width = "500px" alt="Why Node.js is Perfect for Building Fast Web Applications" src="./assets/web-apps.png">
+    <p>
+  </a>
+
+<br>
+
