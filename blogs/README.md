@@ -511,3 +511,13 @@
   </a>
 
 <br>
+
+### [Spread vs Rest Operators in JavaScript](https://blog.atharvdangedev.in/posts/spread-vs-rest-operators-in-javascript)
+
+  <a href="https://blog.atharvdangedev.in/posts/spread-vs-rest-operators-in-javascript">
+      <p align=center>
+      <img width = "500px" alt="Spread vs Rest Operators in JavaScript" src="./assets/spread-rest.png">
+    <p>
+  </a>
+
+<br>
