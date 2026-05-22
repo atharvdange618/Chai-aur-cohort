@@ -491,3 +491,13 @@
   </a>
 
 <br>
+
+### [How Node.js Handles Multiple Requests with a Single Thread](https://blog.atharvdangedev.in/posts/how-nodejs-handles-multiple-requests-with-a-single-thread)
+
+  <a href="https://blog.atharvdangedev.in/posts/how-nodejs-handles-multiple-requests-with-a-single-thread">
+      <p align=center>
+      <img width = "500px" alt="How Node.js Handles Multiple Requests with a Single Thread" src="./assets/mul-req-single-thread.png">
+    <p>
+  </a>
+
+<br>
