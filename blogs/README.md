@@ -472,3 +472,13 @@
 
 <br>
 
+### [Sessions vs JWT vs Cookies: Understanding Authentication Approaches](https://blog.atharvdangedev.in/posts/sessions-vs-jwt-vs-cookies-understanding-authentication-approaches)
+
+  <a href="https://blog.atharvdangedev.in/posts/sessions-vs-jwt-vs-cookies-understanding-authentication-approaches">
+      <p align=center>
+      <img width = "500px" alt="Sessions vs JWT vs Cookies: Understanding Authentication Approaches" src="./assets/sessions-jwt-cookies.png">
+    <p>
+  </a>
+
+<br>
+
