@@ -531,3 +531,13 @@
   </a>
 
 <br>
+
+### [JWT Authentication in Node.js Explained Simply](https://blog.atharvdangedev.in/posts/jwt-authentication-in-nodejs-explained-simply)
+
+  <a href="https://blog.atharvdangedev.in/posts/jwt-authentication-in-nodejs-explained-simply">
+      <p align=center>
+      <img width = "500px" alt="JWT Authentication in Node.js Explained Simply" src="./assets/jwt-auth.png">
+    <p>
+  </a>
+
+<br>
