@@ -621,3 +621,13 @@
   </a>
 
 <br>
+
+### [What is Middleware in Express and How It Works](https://blog.atharvdangedev.in/posts/what-is-middleware-in-express-and-how-it-works)
+
+  <a href="https://blog.atharvdangedev.in/posts/what-is-middleware-in-express-and-how-it-works">
+      <p align=center>
+      <img width = "500px" alt="What is Middleware in Express and How It Works" src="./assets/middleware.png">
+    <p>
+  </a>
+
+<br>
