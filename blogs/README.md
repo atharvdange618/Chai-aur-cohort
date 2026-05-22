@@ -561,3 +561,13 @@
   </a>
 
 <br>
+
+### [Handling File Uploads in Express with Multer](https://blog.atharvdangedev.in/posts/handling-file-uploads-in-express-with-multer)
+
+  <a href="https://blog.atharvdangedev.in/posts/handling-file-uploads-in-express-with-multer">
+      <p align=center>
+      <img width = "500px" alt="Handling File Uploads in Express with Multer" src="./assets/multer.png">
+    <p>
+  </a>
+
+<br>
