@@ -482,3 +482,12 @@
 
 <br>
 
+### [URL Parameters vs Query Strings in Express.js](https://blog.atharvdangedev.in/posts/url-parameters-vs-query-strings-in-expressjs)
+
+  <a href="https://blog.atharvdangedev.in/posts/url-parameters-vs-query-strings-in-expressjs">
+      <p align=center>
+      <img width = "500px" alt="URL Parameters vs Query Strings in Express.js" src="./assets/url-query-params.png">
+    <p>
+  </a>
+
+<br>
