@@ -521,3 +521,13 @@
   </a>
 
 <br>
+
+### [Creating Routes and Handling Requests with Express](https://blog.atharvdangedev.in/posts/creating-routes-and-handling-requests-with-express)
+
+  <a href="https://blog.atharvdangedev.in/posts/creating-routes-and-handling-requests-with-express">
+      <p align=center>
+      <img width = "500px" alt="Creating Routes and Handling Requests with Express" src="./assets/create-routes.png">
+    <p>
+  </a>
+
+<br>
