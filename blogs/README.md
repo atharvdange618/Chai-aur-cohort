@@ -451,3 +451,13 @@
   </a>
 
 <br>
+
+### [Array Flatten in JavaScript](https://blog.atharvdangedev.in/posts/array-flatten-in-javascript)
+
+  <a href="https://blog.atharvdangedev.in/posts/array-flatten-in-javascript">
+      <p align=center>
+      <img width = "500px" alt="Array Flatten in JavaScript" src="./assets/array-flat.png">
+    <p>
+  </a>
+
+<br>
