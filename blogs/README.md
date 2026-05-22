@@ -501,3 +501,13 @@
   </a>
 
 <br>
+
+### [Setting Up Your First Node.js Application Step-by-Step](https://blog.atharvdangedev.in/posts/setting-up-your-first-nodejs-application-step-by-step)
+
+  <a href="https://blog.atharvdangedev.in/posts/setting-up-your-first-nodejs-application-step-by-step">
+      <p align=center>
+      <img width = "500px" alt="Setting Up Your First Node.js Application Step-by-Step" src="./assets/mul-req-single-thread.png">
+    <p>
+  </a>
+
+<br>
