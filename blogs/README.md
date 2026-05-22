@@ -631,3 +631,13 @@
   </a>
 
 <br>
+
+### [Monorepos Explained: The What and Why](https://blog.atharvdangedev.in/posts/monorepos-explained-the-what-and-why)
+
+  <a href="https://blog.atharvdangedev.in/posts/monorepos-explained-the-what-and-why">
+      <p align=center>
+      <img width = "500px" alt="Monorepos Explained: The What and Why" src="./assets/monorepo.png">
+    <p>
+  </a>
+
+<br>
