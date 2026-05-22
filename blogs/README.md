@@ -461,3 +461,14 @@
   </a>
 
 <br>
+
+### [Template Literals in JavaScript](https://blog.atharvdangedev.in/posts/template-literals-in-javascript)
+
+  <a href="https://blog.atharvdangedev.in/posts/template-literals-in-javascript">
+      <p align=center>
+      <img width = "500px" alt="Template Literals in JavaScript" src="./assets/template-literals.png">
+    <p>
+  </a>
+
+<br>
+
